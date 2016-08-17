@@ -9,6 +9,7 @@ Listen {{ keystone_service_port }}
     WSGIScriptAlias       / /var/www/cgi-bin/keystone/main
     WSGIApplicationGroup  %{GLOBAL}
     WSGIPassAuthorization On
+    WSGIScriptReloading   Off
 
     <IfVersion >= 2.4>
       ErrorLogFormat "%{cu}t %M"
@@ -79,6 +80,7 @@ Listen {{ keystone_admin_port }}
     WSGIScriptAlias       / /var/www/cgi-bin/keystone/admin
     WSGIApplicationGroup  %{GLOBAL}
     WSGIPassAuthorization On
+    WSGIScriptReloading   Off
 
     <IfVersion >= 2.4>
       ErrorLogFormat "%{cu}t %M"
