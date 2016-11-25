@@ -117,6 +117,16 @@
     - Restart service on first node
     - Restart service on other nodes
 
+- name: remove Listen from Apache config
+  lineinfile:
+    dest: "{{ keystone_apache_conf }}"
+    regexp: '^(Listen.*)'
+    backrefs: yes
+    line: '#\1'
+  notify:
+    - Restart service on first node
+    - Restart service on other nodes
+
 ## NOTE(mgariepy):
 ## We need to enable httpd on CentOS if not it won't start when the container is restarted.
 - name: Load service
