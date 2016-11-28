@@ -13,14 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-keystone_shibboleth_repo:
-  state: "present"
-  name: "shibboleth"
-  description: "shibboleth Repo"
-  file: shibboleth
-  baseurl: "http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7/"
-  gpgkey: "http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7//repodata/repomd.xml.key"
-
 keystone_distro_packages:
   - ca-certificates
   - cronie

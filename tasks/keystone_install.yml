@@ -13,13 +13,144 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: keystone_install_apt.yml
-  static: no
-  when: ansible_pkg_mgr == 'apt'
-
-- include: keystone_install_yum.yml
-  static: no
+- name: Create keystone dir
+  file:
+    path: "{{ item.path }}"
+    state: directory
+    owner: "{{ item.owner|default(keystone_system_user_name) }}"
+    group: "{{ item.group|default(keystone_system_group_name) }}"
+    mode: "{{ item.mode|default('0755') }}"
+  with_items:
+    - { path: "/etc/pki/tls/certs", owner: "root", group: "root" }
+    - { path: "/etc/pki/tls/private", owner: "root", group: "root" }
+    - { path: "/var/lock/keystone", mode: "2755" }
+    - { path: "/var/log/httpd", mode: "2755" }
   when: ansible_pkg_mgr == 'yum'
+
+- name: Create system links
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    state: "link"
+  with_items:
+    - { src: "/etc/pki/tls/certs", dest: "/etc/ssl/certs" }
+    - { src: "/etc/pki/tls/private", dest: "/etc/ssl/private" }
+    - { src: "/var/log/httpd", dest: "/var/log/apache2" }
+  when: ansible_pkg_mgr == 'yum'
+
+- name: Add shibboleth repo
+  yum_repository:
+    name: "shibboleth"
+    description: "shibboleth Repo"
+    baseurl: "http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7/"
+    gpgkey: "http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7//repodata/repomd.xml.key"
+    gpgcheck: yes
+  when:
+    - ansible_pkg_mgr == 'yum'
+    - keystone_sp != {}
+
+- name: Ensure apt cache is up to date
+  apt:
+    update_cache: yes
+    cache_valid_time: "{{ cache_timeout }}"
+  when:
+    - ansible_pkg_mgr == 'apt'
+
+- name: Install distro packages
+  package:
+    name: "{{ item }}"
+    state: "{{ keystone_package_state }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_distro_packages }}"
+
+- name: Install distro packages for Apache
+  package:
+    name: "{{ item }}"
+    state: "{{ keystone_package_state }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_apache_distro_packages }}"
+  when:
+    - keystone_apache_enabled | bool
+
+- name: Install distro packages for mod_wsgi
+  package:
+    name: "{{ item }}"
+    state: "{{ keystone_package_state }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_mod_wsgi_distro_packages }}"
+  when:
+    - keystone_mod_wsgi_enabled | bool
+
+- name: Install distro packages for mod_proxy_uwsgi
+  package:
+    name: "{{ item }}"
+    state: "{{ keystone_package_state }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_mod_proxy_uwsgi_distro_packages }}"
+  when:
+    - not keystone_mod_wsgi_enabled | bool
+
+- name: Install distro packages for Nginx
+  package:
+    name: "{{ item }}"
+    state: "{{ keystone_package_state }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_nginx_distro_packages }}"
+  when:
+    - not keystone_apache_enabled | bool
+
+- name: Install distro packages for IdP
+  package:
+    name: "{{ item }}"
+    state: "{{ keystone_package_state }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_idp_distro_packages }}"
+  when:
+    - keystone_apache_enabled | bool
+    - keystone_idp != {}
+
+- name: Install distro packages for SP
+  package:
+    name: "{{ item }}"
+    state: "{{ keystone_package_state }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_sp_distro_packages }}"
+  when:
+    - keystone_apache_enabled | bool
+    - keystone_sp != {}
+
+- name: Install distro packages for developer mode
+  package:
+    name: "{{ item }}"
+    state: "{{ keystone_package_state }}"
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_developer_mode_distro_packages }}"
+  when:
+    - keystone_developer_mode | bool
 
 - name: Create WSGI symlinks
   file:
