@@ -27,6 +27,8 @@
     - (keystone_apache_enabled | bool) or (keystone_mod_wsgi_enabled | bool)
   notify:
     - Wait for keystone service port
+  tags:
+    - keystone-config
 
 - name: Restart Nginx on first node
   service:
@@ -39,6 +41,8 @@
   when:
     - inventory_hostname == groups['keystone_all'][0]
     - not keystone_apache_enabled | bool
+  tags:
+    - keystone-config
 
 - name: Restart Keystone APIs on first node
   service:
@@ -54,6 +58,9 @@
     - not keystone_mod_wsgi_enabled | bool
   notify:
     - Wait for keystone service port
+  tags:
+    - keystone-config
+
 
 - name: Wait for keystone service port
   wait_for:
@@ -63,6 +70,8 @@
   register: keystone_wait_check
   until: keystone_wait_check | success
   retries: 5
+  tags:
+    - keystone-config
 
 - name: Restart service on other nodes
   service:
@@ -76,6 +85,8 @@
   when:
     - inventory_hostname != groups['keystone_all'][0]
     - (keystone_apache_enabled | bool) or (keystone_mod_wsgi_enabled | bool)
+  tags:
+    - keystone-config
 
 - name: Restart Nginx on other nodes
   service:
@@ -88,6 +99,8 @@
   when:
     - inventory_hostname != groups['keystone_all'][0]
     - not keystone_apache_enabled | bool
+  tags:
+    - keystone-config
 
 - name: Restart Keystone APIs on other nodes
   service:
@@ -101,6 +114,8 @@
   when:
     - inventory_hostname != groups['keystone_all'][0]
     - not keystone_mod_wsgi_enabled | bool
+  tags:
+    - keystone-config
 
 - name: Restart Shibd
   service:
@@ -111,8 +126,12 @@
   until: shibd_restart|success
   retries: 5
   delay: 2
+  tags:
+    - keystone-config
 
 - name: Perform a Keystone DB sync contract
   command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
   become: yes
   become_user: "{{ keystone_system_user_name }}"
+  tags:
+    - keystone-config
