@@ -17,7 +17,6 @@
   service:
     name: "{{ keystone_system_service_name }}"
     state: stopped
-    pattern: "{{ keystone_system_service_name }}"
   failed_when: false
 
 - name: Disable default configuration
