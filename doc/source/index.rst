@@ -12,6 +12,9 @@ Keystone role for OpenStack-Ansible
    configure-federation-idp.rst
    configure-federation-mapping.rst
 
+To clone or view the source code for this repository, visit the role repository
+for `os_keystone <https://github.com/openstack/openstack-ansible-os_keystone>`_.
+
 Default variables
 ~~~~~~~~~~~~~~~~~
 
