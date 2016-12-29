@@ -73,7 +73,7 @@ IdP and protocol.
 
 The details of how the mapping engine works, the schema, and various rule
 examples are in the `keystone developer documentation
-<http://docs.openstack.org/developer/keystone/mapping_combinations.html>`_.
+<http://docs.openstack.org/developer/keystone/federation/federated_identity.html#mapping-combinations>`_.
 
 For example, SP attribute mapping configuration for an ADFS IdP:
 
