@@ -37,6 +37,9 @@ keystone_developer_constraints:
 keystone_venv_tag: untagged
 keystone_bin: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin"
 
+# venv_download, even when true, will use the fallback method of building the
+# venv from scratch if the venv download fails.
+keystone_venv_download: "{{ not keystone_developer_mode | bool }}"
 keystone_venv_download_url: http://127.0.0.1/venvs/untagged/ubuntu/keystone.tgz
 
 keystone_fatal_deprecations: False

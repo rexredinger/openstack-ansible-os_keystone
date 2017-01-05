@@ -191,7 +191,7 @@
     dest: "/var/cache/{{ keystone_venv_download_url | basename }}"
     checksum: "sha1:{{ lookup('url', keystone_venv_download_url | replace('tgz', 'checksum')) }}"
   register: keystone_get_venv
-  when: not keystone_developer_mode | bool
+  when: keystone_venv_download | bool
 
 - name: Remove existing venv
   file:
@@ -213,7 +213,7 @@
     copy: "no"
   when:
     - not keystone_developer_mode | bool
-    - keystone_get_venv | changed or keystone_venv_dir | changed
+    - keystone_get_venv | changed
   notify:
     - Restart Keystone APIs on first node
     - Restart Keystone APIs on other nodes
@@ -234,7 +234,7 @@
   until: install_packages|success
   retries: 5
   delay: 2
-  when: keystone_developer_mode | bool
+  when: not keystone_get_venv | success or keystone_developer_mode | bool
   notify:
     - Restart Keystone APIs on first node
     - Restart Keystone APIs on other nodes
