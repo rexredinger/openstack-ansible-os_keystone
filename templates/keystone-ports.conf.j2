@@ -1,4 +1,6 @@
 # {{ ansible_managed }}
 
-Listen {{ keystone_service_port }}
-Listen {{ keystone_admin_port }}
+# We place a blank file here
+# Listen commands happen inside the individual VHost files
+# This allows for multiple services VHosts to exist without
+# overwriting Listen lines.
