@@ -52,12 +52,11 @@
 
 - include: keystone_post_install.yml
   tags:
-    - keystone-install
     - keystone-config
 
 - include: keystone_key_setup.yml
   tags:
-    - keystone-install
+    - keystone-config
 
 - include: keystone_fernet.yml
   static: no
@@ -65,20 +64,18 @@
     - "'fernet' in keystone_token_provider"
     - keystone_service_setup | bool
   tags:
-    - keystone-install
     - keystone-config
 
 - include: keystone_credential.yml
   static: no
   when: keystone_service_setup | bool
   tags:
-    - keystone-install
+    - keystone-config
 
 - include: keystone_federation_sp_setup.yml
   static: no
   when: keystone_sp != {}
   tags:
-    - keystone-install
     - keystone-config
 
 - include: keystone_db_setup.yml
@@ -87,7 +84,7 @@
     - inventory_hostname == groups['keystone_all'][0]
     - keystone_get_venv | changed or keystone_venv_dir | changed or install_packages | changed
   tags:
-    - keystone-install
+    - keystone-config
 
 - include: keystone_token_cleanup.yml
   static: no
@@ -98,28 +95,24 @@
 
 - include: keystone_ssl.yml
   tags:
-    - keystone-install
     - keystone-config
 
 - include: keystone_apache.yml
   static: no
   when: keystone_apache_enabled | bool
   tags:
-    - keystone-install
     - keystone-config
 
 - include: keystone_nginx.yml
   static: no
   when: not keystone_apache_enabled | bool
   tags:
-    - keystone-install
     - keystone-config
 
 - include: keystone_uwsgi.yml
   static: no
   when: not keystone_mod_wsgi_enabled | bool
   tags:
-    - keystone-install
     - keystone-config
 
 - name: Flush handlers
@@ -130,14 +123,12 @@
     - keystone_service_setup | bool
     - inventory_hostname == groups['keystone_all'][0]
   tags:
-    - keystone-install
     - keystone-config
 
 - include: keystone_ldap_setup.yml
   static: no
   when: keystone_service_setup | bool
   tags:
-    - keystone-install
     - keystone-config
 
 - include: keystone_federation_sp_idp_setup.yml
@@ -146,7 +137,6 @@
     - keystone_sp != {}
     - inventory_hostname == groups['keystone_all'][0]
   tags:
-    - keystone-install
     - keystone-config
 
 - name: Flush handlers
@@ -156,5 +146,4 @@
   static: no
   when: keystone_idp != {}
   tags:
-    - keystone-install
     - keystone-config
