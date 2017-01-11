@@ -234,7 +234,7 @@
   until: install_packages|success
   retries: 5
   delay: 2
-  when: not keystone_get_venv | success or keystone_developer_mode | bool
+  when: keystone_get_venv | failed or keystone_get_venv | skipped or keystone_developer_mode | bool
   notify:
     - Restart Keystone APIs on first node
     - Restart Keystone APIs on other nodes
@@ -248,11 +248,11 @@
   when:
     - ansible_pkg_mgr == 'yum'
     - not keystone_developer_mode | bool
-    - keystone_get_venv | changed or keystone_venv_dir | changed
+    - keystone_get_venv | changed
 
 - name: Update virtualenv path
   command: >
     virtualenv-tools --update-path=auto --reinitialize {{ keystone_bin | dirname }}
   when:
     - not keystone_developer_mode | bool
-    - keystone_get_venv | changed or keystone_venv_dir | changed
+    - keystone_get_venv | changed
