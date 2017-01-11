@@ -27,6 +27,7 @@ keystone_distro_packages:
   - openssl
   - python-devel
   - rsync
+  - which
 
 keystone_apache_distro_packages:
   - httpd
