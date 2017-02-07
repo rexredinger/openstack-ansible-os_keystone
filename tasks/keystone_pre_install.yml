@@ -58,7 +58,7 @@
   with_items:
     - { path: "/openstack", mode: "0755", owner: "root", group: "root" }
     - { path: "/etc/keystone", mode: "0750" }
-    - { path: "{{ keystone_ldap_domain_config_dir }}" }
+    - { path: "{{ keystone_ldap_domain_config_dir }}", mode: "0750" }
     - { path: "/etc/keystone/ssl" }
     - { path: "{{ keystone_fernet_tokens_key_repository }}", mode: "2750"}
     - { path: "{{ keystone_system_user_home }}" }
