@@ -152,18 +152,6 @@
   when:
     - keystone_developer_mode | bool
 
-- name: Create WSGI symlinks
-  file:
-    src: "{{ item.src }}"
-    dest: "/var/www/cgi-bin/keystone/{{ item.dest }}"
-    state: link
-    force: yes
-  with_items:
-    - src: "{{ keystone_bin }}/keystone-wsgi-admin"
-      dest: admin
-    - src: "{{ keystone_bin }}/keystone-wsgi-public"
-      dest: main
-
 - name: Create developer mode constraint file
   copy:
     dest: "/opt/developer-pip-constraints.txt"
@@ -251,3 +239,15 @@
   command: >
     virtualenv-tools --update-path=auto --reinitialize {{ keystone_bin | dirname }}
   when: keystone_get_venv | changed
+
+- name: Create WSGI symlinks
+  file:
+    src: "{{ item.src }}"
+    dest: "/var/www/cgi-bin/keystone/{{ item.dest }}"
+    state: link
+    force: yes
+  with_items:
+    - src: "{{ keystone_bin }}/keystone-wsgi-admin"
+      dest: admin
+    - src: "{{ keystone_bin }}/keystone-wsgi-public"
+      dest: main
