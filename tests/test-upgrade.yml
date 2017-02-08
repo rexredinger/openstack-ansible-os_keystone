@@ -22,11 +22,17 @@
 # Prepare the containers
 - include: common/test-prepare-containers.yml
 
+# Install haproxy
+- include: test-install-haproxy.yml
+
 # Install RabbitMQ/MariaDB
 - include: common/test-install-infra.yml
 
 # Install previous Keystone
 - include: test-install-previous-keystone.yml
+
+# Install upgrade benchmarking
+- include: test-benchmark-keystone-upgrade.yml
 
 # Install Keystone
 - include: common/test-install-keystone.yml
@@ -36,3 +42,6 @@
 
 # Test Keystone
 - include: test-keystone-functional.yml
+
+# Test upgrade benchmarking results
+- include: test-benchmark-keystone-upgrade-results.yml
