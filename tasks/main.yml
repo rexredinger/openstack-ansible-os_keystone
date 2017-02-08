@@ -82,7 +82,9 @@
   when:
     - keystone_database_enabled | bool
     - inventory_hostname == groups['keystone_all'][0]
-    - keystone_get_venv | changed or keystone_venv_dir | changed or install_packages | changed
+    - (keystone_get_venv is defined and keystone_get_venv | changed) or
+        (keystone_venv_dir is defined and keystone_venv_dir | changed) or
+          (install_packages is defined and install_packages | changed)
   tags:
     - keystone-config
 
