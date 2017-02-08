@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 
 # import module snippets
 from ansible.module_utils.basic import *
@@ -80,6 +81,8 @@ class KeystoneSp(object):
         self.identities_return_list = list()
         self.protocols_return_list = list()
         self.sp_data = self.module.params['sp_data']
+        if isinstance(self.sp_data, str):
+            self.sp_data = json.loads(self.sp_data.replace("'", '"'))
 
     def populate_sp_data(self):
         trusted_idp_list = self.sp_data['trusted_idp_list']
@@ -113,8 +116,7 @@ def main():
                 'keystone_federated_protocols': ksp.protocols_return_list}
         )
     except Exception as exp:
-        resp = {'stderr': exp}
-        module.fail_json(msg='Failed Process', **resp)
+        module.fail_json(msg='Failed Process: "%s"' % exp)
 
 if __name__ == '__main__':
     main()
