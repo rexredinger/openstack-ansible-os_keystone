@@ -35,38 +35,46 @@
     - Restart service
     - Restart Shibd
 
-- name: Store Shibboleth SP key-pair
-  memcached:
-    name: "{{ item.name }}"
-    file_path: "{{ item.src }}"
-    state: "present"
-    server: "{{ memcached_servers }}"
-    encrypt_string: "{{ memcached_encryption_key }}"
-  with_items:
-    - { src: "/etc/shibboleth/sp-cert.pem", name: "keystone_sp_cert" }
-    - { src: "/etc/shibboleth/sp-key.pem", name: "keystone_sp_key" }
-  register: memcache_keys
-  until: memcache_keys|success
-  retries: 5
-  delay: 2
+- name: Store sp cert
+  slurp:
+    src: "/etc/shibboleth/sp-cert.pem"
+  register: _keystone_sp_cert
+  changed_when: false
   when: inventory_hostname == groups['keystone_all'][0]
 
-- name: Distribute the Shibboleth SP key-pair
-  memcached:
-    name: "{{ item.name }}"
-    file_path: "{{ item.src }}"
-    state: "retrieve"
-    file_mode: "{{ item.file_mode }}"
-    dir_mode: "{{ item.dir_mode }}"
-    server: "{{ memcached_servers }}"
-    encrypt_string: "{{ memcached_encryption_key }}"
-  with_items:
-    - { src: "/etc/shibboleth/sp-cert.pem", name: "keystone_sp_cert", file_mode: "0640", dir_mode: "0750" }
-    - { src: "/etc/shibboleth/sp-key.pem", name: "keystone_sp_key", file_mode: "0600", dir_mode: "0750" }
-  register: memcache_keys
-  until: memcache_keys|success
-  retries: 5
-  delay: 2
+- name: Store sp key
+  slurp:
+    src: "/etc/shibboleth/sp-key.pem"
+  register: _keystone_sp_key
+  changed_when: false
+  when: inventory_hostname == groups['keystone_all'][0]
+
+- name: Register a fact for the cert and key
+  set_fact:
+     keystone_sp_cert_fact: "{{ _keystone_sp_cert.content }}"
+     keystone_sp_key_fact: "{{ _keystone_sp_key.content }}"
+  when: inventory_hostname == groups['keystone_all'][0]
+
+- name: Distribute sp key
+  copy:
+    dest: "/etc/shibboleth/sp-key.pem"
+    content: "{{ hostvars[groups['keystone_all'][0]]['keystone_sp_key_fact'] | b64decode }}"
+    owner: "{{ keystone_system_user_name }}"
+    group: "{{ keystone_system_group_name }}"
+    mode: "0640"
+  when: inventory_hostname != groups['keystone_all'][0]
+  notify:
+    - Restart service on first node
+    - Restart service on other nodes
+    - Restart Shibd
+
+- name: Distribute sp cert
+  copy:
+    dest: "/etc/shibboleth/sp-cert.pem"
+    content: "{{ hostvars[groups['keystone_all'][0]]['keystone_sp_cert_fact'] | b64decode }}"
+    owner: "{{ keystone_system_user_name }}"
+    group: "{{ keystone_system_group_name }}"
+    mode: "0640"
   when: inventory_hostname != groups['keystone_all'][0]
   notify:
     - Restart service
