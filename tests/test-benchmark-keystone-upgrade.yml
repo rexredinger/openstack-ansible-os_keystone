@@ -31,7 +31,7 @@
         - { src: "auth.json" , dest: "/opt/auth.json" }
         - { src: "locustfile.py" , dest: "/opt/locustfile.py" }
     - name: Run locust
-      command: locust -f /opt/locustfile.py --no-web --clients=1 --only-summary --host=http://localhost --port=5000 --logfile=/var/log/locust.log
+      command: locust -f /opt/locustfile.py --no-web --clients=1 --only-summary --host={{ keystone_service_publicuri }} --logfile=/var/log/locust.log
       async: 1000
       poll: 0
       register: locust_benchmark
