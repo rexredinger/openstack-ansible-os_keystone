@@ -19,9 +19,26 @@
   tasks:
     - name: Kill upgrade benchmarking process
       command: pkill locust
-    - name: Register upgrade benchmarking result
+    - name: Register upgrade benchmarking results
       async_status: jid={{ locust_benchmark.ansible_job_id }}
-      register: locust_benchmark_result
-    - name: Display upgrade benchmarking result
+      register: locust_benchmark_summary
+    - name: Display upgrade benchmarking results
       debug:
-        msg: "{{ locust_benchmark_result.stderr }}"
+        msg: "{{ locust_benchmark_summary.stderr }}"
+    - name: Parse upgrade benchmarking results
+      set_fact:
+        locust_benchmark_results: >
+          {%- set results = {} %}
+          {%- for line in locust_benchmark_summary.stderr.split('\n') if 'Total' in line %}
+          {%-   set summary_line = line | regex_replace('^ Total\s+', '') | regex_replace('(%\))?\s+|\(', ',') %}
+          {%-   set summary_numbers = summary_line.split(',') %}
+          {%-   set _ = results.update(requests_count = summary_numbers[0]) %}
+          {%-   set _ = results.update(failure_rate = summary_numbers[2]) %}
+          {%- endfor %}
+          {{- results -}}
+    - name: Verify that there were minimal failures during upgrade benchmarking
+      assert:
+        that:
+          - "locust_benchmark_results.requests_count > 0"
+          - "(locust_benchmark_results.failure_rate | int) < 1"
+        msg: Multiple requests must be made with a less than 1% overall failure rate.
