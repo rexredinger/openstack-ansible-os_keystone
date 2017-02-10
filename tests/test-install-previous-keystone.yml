@@ -18,6 +18,9 @@
   user: root
   gather_facts: true
   pre_tasks:
+    - name: Set keystone_venv_tag fact
+      set_fact:
+        keystone_venv_tag: testing-previous
     - name: Set keystone_messaging fact
       set_fact:
         keystone_messaging_enabled: "{{ groups['rabbitmq_all'] is defined }}"
@@ -31,5 +34,9 @@
       db_password: "{{ keystone_container_mysql_password }}"
   roles:
     - role: "os_previous_keystone"
+  post_tasks:
+    - name: Reset keystone_venv_tag fact
+      set_fact:
+        keystone_venv_tag: testing
   vars_files:
     - common/previous/test-vars.yml

@@ -29,3 +29,6 @@ keystone2
 
 [utility_all]
 keystone1
+
+[haproxy_all]
+localhost
