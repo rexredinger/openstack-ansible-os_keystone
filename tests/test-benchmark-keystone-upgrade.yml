@@ -19,7 +19,10 @@
   tasks:
     - name: Install locust
       pip:
-        name: locustio
+        name: "{{ item }}"
+      with_items:
+      - locustio
+      - pyzmq
     - name: Drop benchmarking config files
       template:
         src: "{{ item.src }}"
