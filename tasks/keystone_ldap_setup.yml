@@ -30,9 +30,9 @@
   template:
     src: keystone.domain.conf.j2
     dest: "{{ keystone_ldap_domain_config_dir }}/keystone.{{ item.key }}.conf"
-    owner: "{{ keystone_system_user_name }}"
+    owner: "root"
     group: "{{ keystone_system_group_name }}"
-    mode: "0644"
+    mode: "0640"
   with_dict: "{{ keystone_ldap }}"
   notify:
     - Restart Keystone APIs
