@@ -90,6 +90,7 @@
   static: no
   when:
     - "'sql' in keystone_token_driver"
+    - inventory_hostname == groups['keystone_all'][0]
   tags:
     - keystone-install
 
