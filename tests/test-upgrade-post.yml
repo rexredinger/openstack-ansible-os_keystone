@@ -1,5 +1,5 @@
 ---
-# Copyright 2015, Rackspace US, Inc.
+# Copyright 2017, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,23 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Prepare the user ssh keys
-- include: common/test-prepare-keys.yml
-
-# Prepare the host
-- include: common/test-prepare-host.yml
-
-# Prepare the containers
-- include: common/test-prepare-containers.yml
-
-# Install haproxy
-- include: test-install-haproxy.yml
-
-# Install RabbitMQ/MariaDB
-- include: common/test-install-infra.yml
-
-# Install previous Keystone
-- include: test-install-previous-keystone.yml
+# This playbook handles the installation of current Keystone
+# Benchmarking, and tempest testing.
 
 # Install upgrade benchmarking
 - include: test-benchmark-keystone-upgrade.yml
