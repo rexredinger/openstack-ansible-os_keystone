@@ -29,3 +29,38 @@ tempest_test_whitelist:
 external_lb_vip_address: 10.1.0.1
 internal_lb_vip_address: 10.1.0.1
 test_keystone_host: "{{ (keystone_upgrade is defined) | ternary(external_lb_vip_address, hostvars[groups[test_keystone_group][0]]['ansible_host']) }}"
+
+# For upgrades we need haproxy variables
+haproxy_default_services:
+  - service:
+      haproxy_service_name: galera
+      haproxy_backend_nodes: "{{ [groups['galera_all'][0]] | default([]) }}"  # list expected
+      haproxy_backup_nodes: "{{ groups['galera_all'][1:] | default([]) }}"
+      haproxy_port: 3306
+      haproxy_balance_type: tcp
+      haproxy_timeout_client: 5000s
+      haproxy_timeout_server: 5000s
+      haproxy_backend_options:
+        - "mysql-check user {{ galera_monitoring_user }}"
+      haproxy_whitelist_networks:
+        - 192.168.0.0/16
+        - 172.16.0.0/12
+        - 10.0.0.0/8
+  - service:
+      haproxy_service_name: keystone_service
+      haproxy_backend_nodes: "{{ groups['keystone_all'] | default([])  }}"
+      haproxy_port: 5000
+      haproxy_ssl: "{{ haproxy_ssl }}"
+      haproxy_balance_type: "http"
+      haproxy_backend_options:
+        - "httpchk HEAD /"
+  - service:
+      haproxy_service_name: keystone_admin
+      haproxy_backend_nodes: "{{ groups['keystone_all'] | default([])  }}"
+      haproxy_port: 35357
+      haproxy_balance_type: "http"
+      haproxy_backend_options:
+        - "httpchk HEAD /"
+
+ssl_cipher_suite: "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
+haproxy_ssl: false
