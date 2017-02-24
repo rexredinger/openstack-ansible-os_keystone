@@ -25,3 +25,7 @@ tempest_plugins:
 
 tempest_test_whitelist:
   - keystone_tempest_plugin.tests.api.identity*
+
+external_lb_vip_address: 10.1.0.1
+internal_lb_vip_address: 10.1.0.1
+test_keystone_host: "{{ (keystone_upgrade is defined) | ternary(external_lb_vip_address, hostvars[groups[test_keystone_group][0]]['ansible_host']) }}"

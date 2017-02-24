@@ -1,0 +1,44 @@
+---
+# Copyright 2017, Rackspace US, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+- name: Playbook for deploying upgrade benchmarking
+  hosts: localhost
+  user: root
+  tasks:
+    - name: Kill upgrade benchmarking process
+      command: pkill locust
+    - name: Register upgrade benchmarking results
+      async_status: jid={{ locust_benchmark.ansible_job_id }}
+      register: locust_benchmark_summary
+    - name: Display upgrade benchmarking results
+      debug:
+        msg: "{{ locust_benchmark_summary.stderr }}"
+    - name: Parse upgrade benchmarking results
+      set_fact:
+        locust_benchmark_results: >
+          {%- set results = {} %}
+          {%- for line in locust_benchmark_summary.stderr.split('\n') if 'Total' in line %}
+          {%-   set summary_line = line | regex_replace('^ Total\s+', '') | regex_replace('(%\))?\s+|\(', ',') %}
+          {%-   set summary_numbers = summary_line.split(',') %}
+          {%-   set _ = results.update(requests_count = summary_numbers[0]) %}
+          {%-   set _ = results.update(failure_rate = summary_numbers[2]) %}
+          {%- endfor %}
+          {{- results -}}
+    - name: Verify that there were minimal failures during upgrade benchmarking
+      assert:
+        that:
+          - "locust_benchmark_results.requests_count > 0"
+          - "(locust_benchmark_results.failure_rate | int) < 1"
+        msg: Multiple requests must be made with a less than 1% overall failure rate.
