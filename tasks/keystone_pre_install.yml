@@ -18,23 +18,33 @@
     name: "{{ keystone_system_group_name }}"
     state: "present"
     system: "yes"
+  delegate_to: "{{ item }}"
+  with_items: "{{ ansible_play_hosts }}"
+  when: "{{ inventory_hostname == ansible_play_hosts[0] }}"
 
 - name: create additional groups
   group:
-    name: "{{ item }}"
+    name: "{{ item[1] }}"
     state: "present"
     system: "yes"
-  with_items: "{{ keystone_system_additional_groups }}"
+  with_nested:
+    - "{{ ansible_play_hosts }}"
+    - "{{ keystone_system_additional_groups }}"
+  delegate_to: "{{ item[0] }}"
+  when: "{{ inventory_hostname == ansible_play_hosts[0] }}"
 
 - name: Remove old key file(s) if found
   file:
-    path: "{{ item }}"
+    path: "{{ item[1] }}"
     state: "absent"
-  with_items:
-    - "{{ keystone_system_user_home }}/.ssh/authorized_keys"
-    - "{{ keystone_system_user_home }}/.ssh/id_rsa"
-    - "{{ keystone_system_user_home }}/.ssh/id_rsa.pub"
+  with_nested:
+    - "{{ ansible_play_hosts }}"
+    - - "{{ keystone_system_user_home }}/.ssh/authorized_keys"
+      - "{{ keystone_system_user_home }}/.ssh/id_rsa"
+      - "{{ keystone_system_user_home }}/.ssh/id_rsa.pub"
   when: keystone_recreate_keys | bool
+  delegate_to: "{{ item[0] }}"
+  when: "{{ inventory_hostname == ansible_play_hosts[0] }}"
 
 - name: Create the keystone system user
   user:
@@ -46,23 +56,31 @@
     system: "yes"
     createhome: "yes"
     home: "{{ keystone_system_user_home }}"
+  delegate_to: "{{ item }}"
+  with_items: "{{ ansible_play_hosts }}"
+  when: "{{ inventory_hostname == ansible_play_hosts[0] }}"
 
+# The fernet key repository is needed on all hosts even if only running against
+# one host, so the delegation preps the directories on all hosts at once.
 - name: Create keystone dir
   file:
-    path: "{{ item.path }}"
+    path: "{{ item[1].path }}"
     state: directory
-    owner: "{{ item.owner|default(keystone_system_user_name) }}"
-    group: "{{ item.group|default(keystone_system_group_name) }}"
-    mode: "{{ item.mode|default(0755) }}"
-  with_items:
-    - { path: "/openstack", mode: "0755", owner: "root", group: "root" }
-    - { path: "/etc/keystone", mode: "0750" }
-    - { path: "{{ keystone_ldap_domain_config_dir }}", mode: "0750" }
-    - { path: "/etc/keystone/ssl" }
-    - { path: "{{ keystone_fernet_tokens_key_repository }}", mode: "2750"}
-    - { path: "{{ keystone_system_user_home }}" }
-    - { path: "/var/www/cgi-bin", owner: root, group: root }
-    - { path: "/var/www/cgi-bin/keystone" }
+    owner: "{{ item[1].owner|default(keystone_system_user_name) }}"
+    group: "{{ item[1].group|default(keystone_system_group_name) }}"
+    mode: "{{ item[1].mode|default(0755) }}"
+  with_nested:
+    - "{{ ansible_play_hosts }}"
+    - - { path: "/openstack", mode: "0755", owner: "root", group: "root" }
+      - { path: "/etc/keystone", mode: "0750" }
+      - { path: "{{ keystone_ldap_domain_config_dir }}", mode: "0750" }
+      - { path: "/etc/keystone/ssl" }
+      - { path: "{{ keystone_fernet_tokens_key_repository }}", mode: "2750"}
+      - { path: "{{ keystone_system_user_home }}" }
+      - { path: "/var/www/cgi-bin", owner: root, group: root }
+      - { path: "/var/www/cgi-bin/keystone" }
+  delegate_to: "{{ item[0] }}"
+  when: "{{ inventory_hostname == ansible_play_hosts[0] }}"
 
 - name: Test for log directory or link
   shell: |

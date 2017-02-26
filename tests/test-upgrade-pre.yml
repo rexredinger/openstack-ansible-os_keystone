@@ -26,7 +26,7 @@
 - include: common/test-prepare-containers.yml
 
 # Install haproxy
-- include: test-install-haproxy.yml
+- include: common/test-install-haproxy.yml
 
 # Install RabbitMQ/MariaDB
 - include: common/test-install-infra.yml
