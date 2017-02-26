@@ -129,7 +129,7 @@
 - include: keystone_service_setup.yml
   when:
     - keystone_service_setup | bool
-    - inventory_hostname == groups['keystone_all'][0]
+    - inventory_hostname == ansible_play_hosts[0]
   tags:
     - keystone-config
 
