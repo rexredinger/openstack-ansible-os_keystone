@@ -65,6 +65,9 @@ keystone_apache_default_sites:
   - "/etc/httpd/conf.d/ssl.conf"
 
 keystone_apache_conf: "/etc/httpd/conf/httpd.conf"
+keystone_apache_default_log_folder: "/var/log/httpd"
+keystone_apache_default_log_owner: "root"
+keystone_apache_default_log_grp: "root"
 keystone_apache_security_conf: "{{ keystone_apache_conf }}"
 
 keystone_apache_configs:

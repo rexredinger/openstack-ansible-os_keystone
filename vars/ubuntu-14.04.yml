@@ -58,6 +58,9 @@ keystone_apache_default_sites:
 keystone_apache_site_available: "/etc/apache2/sites-available/keystone-httpd.conf"
 keystone_apache_site_enabled: "/etc/apache2/sites-enabled/keystone-httpd.conf"
 keystone_apache_conf: "/etc/apache2/apache2.conf"
+keystone_apache_default_log_folder: "/var/log/apache2"
+keystone_apache_default_log_owner: "root"
+keystone_apache_default_log_grp: "adm"
 keystone_apache_security_conf: "/etc/apache2/conf-available/security.conf"
 
 keystone_apache_configs:

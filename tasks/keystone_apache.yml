@@ -25,6 +25,13 @@
     system: "yes"
     shell: "/bin/false"
 
+- name: Ensure apache log folder exists
+  file:
+    dest: "{{ keystone_apache_default_log_folder }}"
+    state: directory
+    owner: "{{ keystone_apache_default_log_owner }}"
+    group: "{{ keystone_apache_default_log_grp }}"
+
 - name: Drop apache2 config files
   template:
     src: "{{ item.src }}"
