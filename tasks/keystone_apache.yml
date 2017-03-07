@@ -25,6 +25,13 @@
     system: "yes"
     shell: "/bin/false"
 
+- name: Ensure apache log folder exists
+  file:
+    dest: "{{ keystone_apache_default_log_folder }}"
+    state: directory
+    owner: "{{ keystone_apache_default_log_owner }}"
+    group: "{{ keystone_apache_default_log_grp }}"
+
 ## Workaround for https://github.com/ansible/ansible-modules-core/issues/5328
 ## TODO: Replace using apache2_module when fixed in Ansible release
 ## NOTE(cloudnull):
