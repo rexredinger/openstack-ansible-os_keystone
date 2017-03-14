@@ -17,9 +17,9 @@ keystone_distro_packages:
   - ca-certificates
   - cronie
   - cronie-anacron
+  - cyrus-sasl-lib
   - git
   - libffi-devel
-  - libgsasl-devel
   - libxml2-devel
   - libxslt-devel
   - openldap
