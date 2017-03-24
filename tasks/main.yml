@@ -150,3 +150,13 @@
   when: keystone_idp != {}
   tags:
     - keystone-config
+
+- name: Diagnose common problems with keystone deployments
+  command: "{{ keystone_bin }}/keystone-manage doctor"
+  become: yes
+  become_user: "{{ keystone_system_user_name }}"
+  register: keystone_doctor
+  failed_when: not debug and keystone_doctor.rc != 0
+  changed_when: false
+  tags:
+    - always
