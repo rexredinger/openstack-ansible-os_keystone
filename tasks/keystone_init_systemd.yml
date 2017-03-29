@@ -33,12 +33,14 @@
     group: "root"
 
 - name: Place the systemd init script
-  template:
+  config_template:
     src: "keystone-uwsgi_systemd-init.j2"
     dest: "/etc/systemd/system/{{ program_name }}.service"
     mode: "0644"
     owner: "root"
     group: "root"
+    config_overrides: "{{ keystone_uwsgi_init_overrides }}"
+    config_type: "ini"
   register: systemd_init
 
 - name: Reload the systemd daemon
