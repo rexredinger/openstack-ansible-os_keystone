@@ -50,6 +50,12 @@
   tags:
     - keystone-install
 
+- name: refresh local facts
+  setup:
+    filter: ansible_local
+  tags:
+    - keystone-config
+
 - include: keystone_post_install.yml
   tags:
     - keystone-config
@@ -81,10 +87,18 @@
 - include: keystone_db_setup.yml
   when:
     - keystone_database_enabled | bool
-    - inventory_hostname == groups['keystone_all'][0]
-    - (keystone_get_venv is defined and keystone_get_venv | changed) or
-        (keystone_venv_dir is defined and keystone_venv_dir | changed) or
-          (install_packages is defined and install_packages | changed)
+    - inventory_hostname == ansible_play_hosts[0]
+    - ansible_local.keystone.general.need_db_sync | bool
+  tags:
+    - keystone-config
+
+- name: Disable the need of a db sync on all nodes
+  ini_file:
+    dest: /etc/ansible/facts.d/keystone.fact
+    section: general
+    option: need_db_sync
+    value: False
+  when: dbsync | succeeded
   tags:
     - keystone-config
 

@@ -38,5 +38,6 @@
   changed_when: true
   become: yes
   become_user: "{{ keystone_system_user_name }}"
+  register: dbsync
   notify:
     - Perform a Keystone DB sync contract
