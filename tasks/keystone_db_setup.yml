@@ -50,5 +50,6 @@
 - name: Check if Keystone DB sync contract is required
   command: "true"
   changed_when: keystone_db_sync_check.rc == 4
+  register: dbsync
   notify:
     - Perform a Keystone DB sync contract
