@@ -112,3 +112,13 @@
   when:
     - not keystone_developer_mode | bool
     - keystone_get_venv | changed or keystone_venv_dir | changed
+
+- name: Record the need for a db sync
+  ini_file:
+    dest: /etc/ansible/facts.d/keystone.fact
+    section: general
+    option: need_db_sync
+    value: True
+  when: keystone_get_venv | changed or
+        keystone_venv_dir | changed or
+        install_packages | changed

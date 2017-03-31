@@ -17,3 +17,4 @@
   command: "{{ keystone_bin }}/keystone-manage db_sync"
   become: yes
   become_user: "{{ keystone_system_user_name }}"
+  register: dbsync
