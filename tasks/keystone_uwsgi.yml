@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Uwsgi Configuration
 - name: Ensure uWSGI directory exists
   file:
     path: "/etc/uwsgi/"
@@ -28,37 +27,21 @@
     config_type: ini
   with_items: "{{ keystone_wsgi_program_names }}"
   notify:
-    - Restart Keystone APIs on first node
-    - Restart Keystone APIs on other nodes
+    - Restart uWSGI on first node
+    - Restart uWSGI on other nodes
 
-- include: keystone_init_common.yml
+- include: "keystone_init_{{ ansible_service_mgr }}.yml"
   vars:
     program_name: "{{ keystone_wsgi_public_program_name }}"
     service_name: "{{ keystone_wsgi_public_program_name }}"
     system_user: "{{ keystone_system_user_name }}"
     system_group: "{{ keystone_system_group_name }}"
     service_home: "{{ keystone_system_user_home }}"
-  notify:
-    - Restart Keystone APIs on first node
-    - Restart Keystone APIs on other nodes
 
-- include: keystone_init_common.yml
+- include: "keystone_init_{{ ansible_service_mgr }}.yml"
   vars:
     program_name: "{{ keystone_wsgi_admin_program_name }}"
     service_name: "{{ keystone_wsgi_admin_program_name }}"
     system_user: "{{ keystone_system_user_name }}"
     system_group: "{{ keystone_system_group_name }}"
     service_home: "{{ keystone_system_user_home }}"
-  notify:
-    - Restart Keystone APIs on first node
-    - Restart Keystone APIs on other nodes
-
-- name: Ensure uwsgi service started
-  service:
-    name: "{{ item }}"
-    state: started
-  register: keystone_start
-  until: keystone_start | success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_wsgi_program_names }}"
