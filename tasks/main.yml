@@ -113,15 +113,7 @@
   tags:
     - keystone-config
 
-- include: keystone_apache.yml
-  static: no
-  when: keystone_apache_enabled | bool
-  tags:
-    - keystone-config
-
-- include: keystone_nginx.yml
-  static: no
-  when: not keystone_apache_enabled | bool
+- include: "keystone_{{ (keystone_apache_enabled | bool) | ternary('apache', 'nginx') }}.yml"
   tags:
     - keystone-config
 

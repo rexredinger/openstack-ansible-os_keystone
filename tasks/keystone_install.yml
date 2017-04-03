@@ -61,96 +61,79 @@
     name: "{{ item }}"
     state: "{{ keystone_package_state }}"
   register: install_packages
-  until: install_packages|success
+  until: install_packages | success
   retries: 5
   delay: 2
   with_items: "{{ keystone_distro_packages }}"
 
-- name: Install distro packages for Apache
+- name: Install web server distro packages
   package:
     name: "{{ item }}"
     state: "{{ keystone_package_state }}"
   register: install_packages
-  until: install_packages|success
+  until: install_packages | success
   retries: 5
   delay: 2
-  with_items: "{{ keystone_apache_distro_packages }}"
-  when:
-    - keystone_apache_enabled | bool
+  with_items: "{{ (keystone_apache_enabled | bool) | ternary(keystone_apache_distro_packages, keystone_nginx_distro_packages) }}"
+  notify:
+    - Restart web server on first node
+    - Restart web server on other nodes
 
-- name: Install distro packages for mod_wsgi
+- name: Install mod_wsgi/mod_proxy_uwsgi distro packages
   package:
     name: "{{ item }}"
     state: "{{ keystone_package_state }}"
   register: install_packages
-  until: install_packages|success
+  until: install_packages | success
   retries: 5
   delay: 2
-  with_items: "{{ keystone_mod_wsgi_distro_packages }}"
-  when:
-    - keystone_mod_wsgi_enabled | bool
-
-- name: Install distro packages for mod_proxy_uwsgi
-  package:
-    name: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_mod_proxy_uwsgi_distro_packages }}"
-  when:
-    - not keystone_mod_wsgi_enabled | bool
-
-- name: Install distro packages for Nginx
-  package:
-    name: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_nginx_distro_packages }}"
-  when:
-    - not keystone_apache_enabled | bool
+  with_items: "{{ (keystone_mod_wsgi_enabled | bool) | ternary(keystone_mod_wsgi_distro_packages, keystone_mod_proxy_uwsgi_distro_packages) }}"
+  notify:
+    - Restart web server on first node
+    - Restart web server on other nodes
 
 - name: Install distro packages for IdP
   package:
     name: "{{ item }}"
-    state: "{{ keystone_package_state }}"
+    state: "{{ (keystone_idp != {}) | ternary(keystone_package_state, 'absent') }}"
+    autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+  when:
+    - keystone_apache_enabled | bool
   register: install_packages
-  until: install_packages|success
+  until: install_packages | success
   retries: 5
   delay: 2
   with_items: "{{ keystone_idp_distro_packages }}"
-  when:
-    - keystone_apache_enabled | bool
-    - keystone_idp != {}
+  notify:
+    - Restart web server on first node
+    - Restart web server on other nodes
 
 - name: Install distro packages for SP
   package:
     name: "{{ item }}"
-    state: "{{ keystone_package_state }}"
+    state: "{{ (keystone_sp != {}) | ternary(keystone_package_state, 'absent') }}"
+    autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+  when:
+    - keystone_apache_enabled | bool
   register: install_packages
-  until: install_packages|success
+  until: install_packages | success
   retries: 5
   delay: 2
   with_items: "{{ keystone_sp_distro_packages }}"
-  when:
-    - keystone_apache_enabled | bool
-    - keystone_sp != {}
+  notify:
+    - Restart web server on first node
+    - Restart web server on other nodes
 
 - name: Install distro packages for developer mode
   package:
     name: "{{ item }}"
-    state: "{{ keystone_package_state }}"
+    state: "{{ (keystone_developer_mode | bool) | ternary(keystone_package_state, 'absent') }}"
+    autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
   register: install_packages
-  until: install_packages|success
+  until: install_packages | success
   retries: 5
   delay: 2
   with_items: "{{ keystone_developer_mode_distro_packages }}"
-  when:
-    - keystone_developer_mode | bool
 
 - name: Create developer mode constraint file
   copy:
@@ -201,10 +184,10 @@
     copy: "no"
   when: keystone_get_venv | changed
   notify:
-    - Restart Keystone APIs on first node
-    - Restart Keystone APIs on other nodes
-    - Restart service on first node
-    - Restart service on other nodes
+    - Restart uWSGI on first node
+    - Restart uWSGI on other nodes
+    - Restart web server on first node
+    - Restart web server on other nodes
 
 - name: Install pip packages
   pip:
@@ -222,10 +205,10 @@
   delay: 2
   when: keystone_get_venv | failed or keystone_get_venv | skipped
   notify:
-    - Restart Keystone APIs on first node
-    - Restart Keystone APIs on other nodes
-    - Restart service on first node
-    - Restart service on other nodes
+    - Restart uWSGI on first node
+    - Restart uWSGI on other nodes
+    - Restart web server on first node
+    - Restart web server on other nodes
 
 - name: CentOS remove python from path first
   file:
@@ -251,6 +234,9 @@
       dest: admin
     - src: "{{ keystone_bin }}/keystone-wsgi-public"
       dest: main
+  notify:
+    - Restart web server on first node
+    - Restart web server on other nodes
 
 - name: Record the need for a db sync
   ini_file:
