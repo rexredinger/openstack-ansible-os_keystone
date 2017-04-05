@@ -13,23 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This playbook handles the installation of current Keystone
-# Benchmarking, and tempest testing.
-
-# Install upgrade benchmarking
-- include: test-benchmark-keystone-upgrade.yml
-
-# Update repo
-- include: test-clone-repo.yml
-
-# Install Keystone
-- include: common/test-install-keystone.yml
-
-# Install and execute Tempest
-- include: common/test-install-tempest.yml
-
-# Test Keystone
-- include: test-keystone-functional.yml
-
-# Test upgrade benchmarking results
-- include: test-benchmark-keystone-upgrade-results.yml
+- name: Clone keystone repository if it doesn't exist
+  hosts: localhost
+  user: root
+  pre_tasks:
+    - name: Clone the repo
+      git:
+        repo: "{{ keystone_dev_clone_repo }}"
+        dest: "{{ keystone_dev_local_directory | default('/opt/keystone') }}"
+        version: "{{ keystone_dev_git_branch | default('master') }}"
+      register: git_clone
+      until: git_clone|success

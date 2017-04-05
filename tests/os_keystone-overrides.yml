@@ -16,6 +16,10 @@
 # (c) 2016 Donovan Francesco <donovan.francesco@is.co.za>
 # (c) 2016 Paul Stevens <paul.stevens@is.co.za>
 
+keystone_git_repo: "file:///opt/keystone"
+keystone_dev_clone_repo: "https://git.openstack.org/openstack/keystone"
+keystone_dev_force_clone: False
+
 tempest_run: yes
 
 tempest_plugins:
