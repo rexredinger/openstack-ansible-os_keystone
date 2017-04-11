@@ -28,8 +28,8 @@ provide your own certificates by using the following Ansible variables in
    ``keystone_service_internaluri_insecure`` and
    ``keystone_service_adminuri_insecure`` should be set to ``True``.
 
-Refer to `Securing services with SSL certificates
-<http://docs.openstack.org/developer/openstack-ansible/install-guide/configure-sslcertificates.html>`_
+Refer to :deploy_guide:`Securing services with SSL certificates
+<app-advanced-config-sslcertificates.html>`
 for more information on these configuration options and how you can provide
 your own certificates and keys to use with keystone.
 
