@@ -32,14 +32,14 @@
       config_overrides: "{{ keystone_keystone_paste_ini_overrides }}"
       config_type: "ini"
     - src: "policy.json.j2"
-      dest: "/etc/keystone/policy.json"
+      dest: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
       config_overrides: "{{ keystone_policy_overrides }}"
       config_type: "json"
   notify:
-    - Restart Keystone APIs on first node
-    - Restart Keystone APIs on other nodes
-    - Restart service on first node
-    - Restart service on other nodes
+    - Restart uWSGI on first node
+    - Restart uWSGI on other nodes
+    - Restart web server on first node
+    - Restart web server on other nodes
 
 - name: Copy Keystone Federation SP SSO callback template
   copy:
@@ -51,10 +51,10 @@
   when:
     - keystone_idp != {}
   notify:
-    - Restart Keystone APIs on first node
-    - Restart Keystone APIs on other nodes
-    - Restart service on first node
-    - Restart service on other nodes
+    - Restart uWSGI on first node
+    - Restart uWSGI on other nodes
+    - Restart web server on first node
+    - Restart web server on other nodes
 
 - name: Clean up Keystone Federation SP SSO callback template
   file:
@@ -63,7 +63,7 @@
   when:
     - keystone_idp == {}
   notify:
-    - Restart Keystone APIs on first node
-    - Restart Keystone APIs on other nodes
-    - Restart service on first node
-    - Restart service on other nodes
+    - Restart uWSGI on first node
+    - Restart uWSGI on other nodes
+    - Restart web server on first node
+    - Restart web server on other nodes
