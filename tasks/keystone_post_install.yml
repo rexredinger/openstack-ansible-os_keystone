@@ -27,14 +27,31 @@
       dest: "/etc/keystone/keystone.conf"
       config_overrides: "{{ keystone_keystone_conf_overrides }}"
       config_type: "ini"
-    - src: "keystone-paste.ini.j2"
-      dest: "/etc/keystone/keystone-paste.ini"
+  notify:
+    - Restart uWSGI on first node
+    - Restart uWSGI on other nodes
+    - Restart web server on first node
+    - Restart web server on other nodes
+
+- name: Retrieve and config_template upstream files
+  config_template:
+    content: "{{ lookup('pipe', item.content) | string }}"
+    dest: "{{ item.dest }}"
+    config_overrides: "{{ item.config_overrides }}"
+    config_type: "{{ item.config_type }}"
+  with_items:
+    - dest: "/etc/keystone/keystone-paste.ini"
       config_overrides: "{{ keystone_keystone_paste_ini_overrides }}"
       config_type: "ini"
-    - src: "policy.json.j2"
-      dest: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
+      content: |
+        cat {{ keystone_paste_default_file_path }} 2>/dev/null || \
+        curl -s {{ keystone_git_config_lookup_location }}/{{ keystone_paste_git_file_path }}
+    - dest: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
       config_overrides: "{{ keystone_policy_overrides }}"
       config_type: "json"
+      content: |
+        cat {{ keystone_policy_default_file_path }} 2>/dev/null || \
+        echo {}
   notify:
     - Restart uWSGI on first node
     - Restart uWSGI on other nodes
@@ -43,7 +60,9 @@
 
 - name: Copy Keystone Federation SP SSO callback template
   copy:
-    src: "sso_callback_template.html"
+    content: |
+        cat {{ keystone_sso_callback_file_path }} 2>/dev/null || \
+        curl -s {{ keystone_git_config_lookup_location }}/{{ keystone_sso_callback_git_file_path }}
     dest: "/etc/keystone/sso_callback_template.html"
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"

@@ -446,7 +446,25 @@ keystone_pip_packages:
 # by the py_pkgs lookup.
 keystone_role_project_group: keystone_all
 
-## Tunable overrides
+#: Tunable file-based overrides
+# The contents of these files, if they exist, are read from the
+# specified path on the deployment host, interpreted by the
+# template engine and copied to the target host. If they do
+# not exist then the default files will be sourced from the
+# service git repository.
+keystone_paste_default_file_path: "/etc/openstack_deploy/keystone/keystone-paste.ini"
+keystone_policy_default_file_path: "/etc/openstack_deploy/keystone/policy.json"
+keystone_sso_callback_file_path: "/etc/openstack_deploy/keystone/sso_callback_template.html"
+
+# If the above-mentioned files do not exist, then these
+# paths will be used to find the files from the git config
+# lookup location.
+keystone_git_config_lookup_location: https://git.openstack.org/cgit/openstack/keystone/plain
+keystone_paste_git_file_path: "etc/keystone-paste.ini?h={{ keystone_git_install_branch }}"
+keystone_sso_callback_git_file_path: "etc/sso_callback_template.html?h={{ keystone_git_install_branch }}"
+
+#: Tunable var-based overrides
+# The contents of these are templated over the default files.
 keystone_keystone_conf_overrides: {}
 keystone_keystone_default_conf_overrides: {}
 keystone_keystone_paste_ini_overrides: {}
