@@ -1,5 +1,5 @@
 ---
-# Copyright 2017, Rackspace US, Inc.
+# Copyright 2016, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,23 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This playbook handles the installation of current Keystone
-# Benchmarking, and tempest testing.
-
-# Install upgrade benchmarking
-- include: test-benchmark-keystone-upgrade.yml
-
-# Update repo
-- include: test-clone-repo.yml
-
-# Install Keystone
-- include: common/test-install-keystone.yml
-
-# Install and execute Tempest
-- include: common/test-install-tempest.yml
-
-# Test Keystone
-- include: test-keystone-functional.yml
-
-# Test upgrade benchmarking results
-- include: test-benchmark-keystone-upgrade-results.yml
+lxc_container_bind_mounts:
+  - host_directory: "{{ keystone_dev_local_directory | default('/opt/keystone') }}"
+    container_directory: "/opt/keystone"
