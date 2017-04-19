@@ -16,6 +16,7 @@
 - name: Playbook for deploying upgrade benchmarking
   hosts: localhost
   user: root
+  become: true
   tasks:
     - name: Install locust
       pip:

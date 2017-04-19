@@ -1,5 +1,5 @@
 ---
-# Copyright 2017, Rackspace US, Inc.
+# Copyright 2016, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,15 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Clone keystone repository if it doesn't exist
-  hosts: localhost
-  user: root
-  become: true
-  pre_tasks:
-    - name: Clone the repo
-      git:
-        repo: "{{ keystone_dev_clone_repo }}"
-        dest: "{{ keystone_dev_local_directory | default('/opt/keystone') }}"
-        version: "{{ keystone_dev_git_branch | default('master') }}"
-      register: git_clone
-      until: git_clone|success
+ansible_host: 10.1.0.4
+ansible_become: True
+ansible_user: root

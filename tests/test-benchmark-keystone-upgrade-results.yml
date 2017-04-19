@@ -16,6 +16,7 @@
 - name: Playbook for deploying upgrade benchmarking
   hosts: localhost
   user: root
+  become: true
   tasks:
     - name: Kill upgrade benchmarking process
       command: pkill locust
