@@ -49,17 +49,12 @@
     - ansible_pkg_mgr == 'yum'
     - keystone_sp != {}
 
-- name: Ensure apt cache is up to date
-  apt:
-    update_cache: yes
-    cache_valid_time: "{{ cache_timeout }}"
-  when:
-    - ansible_pkg_mgr == 'apt'
-
 - name: Install distro packages
   package:
     name: "{{ item }}"
     state: "{{ keystone_package_state }}"
+    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
   register: install_packages
   until: install_packages | success
   retries: 5
@@ -70,6 +65,8 @@
   package:
     name: "{{ item }}"
     state: "{{ keystone_package_state }}"
+    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
   register: install_packages
   until: install_packages | success
   retries: 5
@@ -83,6 +80,8 @@
   package:
     name: "{{ item }}"
     state: "{{ keystone_package_state }}"
+    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
   register: install_packages
   until: install_packages | success
   retries: 5
@@ -97,6 +96,8 @@
     name: "{{ item }}"
     state: "{{ (keystone_idp != {}) | ternary(keystone_package_state, 'absent') }}"
     autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
   when:
     - keystone_apache_enabled | bool
   register: install_packages
@@ -113,6 +114,8 @@
     name: "{{ item }}"
     state: "{{ (keystone_sp != {}) | ternary(keystone_package_state, 'absent') }}"
     autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
   when:
     - keystone_apache_enabled | bool
   register: install_packages
@@ -129,6 +132,8 @@
     name: "{{ item }}"
     state: "{{ (keystone_developer_mode | bool) | ternary(keystone_package_state, 'absent') }}"
     autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
   register: install_packages
   until: install_packages | success
   retries: 5
