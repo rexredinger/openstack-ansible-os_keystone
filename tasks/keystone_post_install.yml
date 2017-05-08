@@ -13,9 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Copy keystone config
+- name: Retrieve default configuration files
+  uri:
+    url: "{{ item }}"
+    return_content: yes
+  with_items:
+    - "{{ keystone_git_config_lookup_location }}/{{ keystone_paste_git_file_path }}"
+    - "{{ keystone_git_config_lookup_location }}/{{ keystone_sso_callback_git_file_path }}"
+  register: _git_file_fetch
+
+- name: Copy keystone configuration files
   config_template:
-    src: "{{ item.src }}"
+    content: "{{ item.content | default(omit) }}"
+    src: "{{ item.src | default(omit) }}"
     dest: "{{ item.dest }}"
     owner: "root"
     group: "{{ keystone_system_group_name }}"
@@ -27,31 +37,14 @@
       dest: "/etc/keystone/keystone.conf"
       config_overrides: "{{ keystone_keystone_conf_overrides }}"
       config_type: "ini"
-  notify:
-    - Restart uWSGI on first node
-    - Restart uWSGI on other nodes
-    - Restart web server on first node
-    - Restart web server on other nodes
-
-- name: Retrieve and config_template upstream files
-  config_template:
-    content: "{{ lookup('pipe', item.content) | string }}"
-    dest: "{{ item.dest }}"
-    config_overrides: "{{ item.config_overrides }}"
-    config_type: "{{ item.config_type }}"
-  with_items:
     - dest: "/etc/keystone/keystone-paste.ini"
       config_overrides: "{{ keystone_keystone_paste_ini_overrides }}"
       config_type: "ini"
-      content: |
-        cat {{ keystone_paste_default_file_path }} 2>/dev/null || \
-        curl -s {{ keystone_git_config_lookup_location }}/{{ keystone_paste_git_file_path }}
+      content: "{{ keystone_paste_user_content | default(keystone_paste_default_content, true) }}"
     - dest: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
       config_overrides: "{{ keystone_policy_overrides }}"
       config_type: "json"
-      content: |
-        cat {{ keystone_policy_default_file_path }} 2>/dev/null || \
-        echo {}
+      content: "{{ keystone_policy_user_content | default('{}', true) }}"
   notify:
     - Restart uWSGI on first node
     - Restart uWSGI on other nodes
@@ -60,9 +53,7 @@
 
 - name: Copy Keystone Federation SP SSO callback template
   copy:
-    content: |
-        cat {{ keystone_sso_callback_file_path }} 2>/dev/null || \
-        curl -s {{ keystone_git_config_lookup_location }}/{{ keystone_sso_callback_git_file_path }}
+    content: "{{ keystone_sso_callback_user_content | default(keystone_sso_callback_default_content, true) }}"
     dest: "/etc/keystone/sso_callback_template.html"
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
