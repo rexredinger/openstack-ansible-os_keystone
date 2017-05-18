@@ -38,9 +38,9 @@
      --bootstrap-role-name {{ keystone_role_name }} \
      --bootstrap-service-name {{ keystone_service_name }} \
      --bootstrap-region-id {{ keystone_service_region }} \
-     --bootstrap-admin-url {{ keystone_service_adminurl }} \
-     --bootstrap-public-url {{ keystone_service_publicurl }} \
-     --bootstrap-internal-url {{ keystone_service_internalurl }}
+     --bootstrap-admin-url {{ keystone_service_adminuri }} \
+     --bootstrap-public-url {{ keystone_service_publicuri }} \
+     --bootstrap-internal-url {{ keystone_service_internaluri }}
   become: yes
   become_user: "{{ keystone_system_user_name }}"
   changed_when: false
@@ -132,6 +132,31 @@
     tenant_name: "{{ keystone_service_tenant_name }}"
     role_name: "{{ keystone_role_name }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
+  register: add_service
+  until: add_service|success
+  retries: 5
+  delay: 10
+
+# Create an endpoint
+- name: Update Keystone endpoint
+  keystone:
+    command: "ensure_endpoint"
+    login_user: "{{ keystone_admin_user_name }}"
+    login_password: "{{ keystone_auth_admin_password }}"
+    login_project_name: "{{ keystone_admin_tenant_name }}"
+    endpoint: "{{ keystone_service_adminuri_proto }}://{{ ansible_host }}:{{ keystone_admin_port }}/v3"
+    ignore_catalog: True
+    region_name: "{{ keystone_service_region }}"
+    service_name: "{{ keystone_service_name }}"
+    service_type: "{{ keystone_service_type }}"
+    insecure: "{{ keystone_service_adminuri_insecure }}"
+    endpoint_list:
+      - url: "{{ keystone_service_publicuri }}"
+        interface: "public"
+      - url: "{{ keystone_service_internaluri }}"
+        interface: "internal"
+      - url: "{{ keystone_service_adminuri }}"
+        interface: "admin"
   register: add_service
   until: add_service|success
   retries: 5
