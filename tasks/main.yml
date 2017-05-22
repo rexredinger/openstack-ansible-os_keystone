@@ -88,14 +88,14 @@
   when:
     - keystone_database_enabled | bool
     - inventory_hostname == ansible_play_hosts[0]
-    - ansible_local.keystone.general.need_db_sync | bool
+    - ansible_local['openstack_ansible']['keystone']['need_db_sync'] | bool
   tags:
     - keystone-config
 
 - name: Disable the need of a db sync on all nodes
   ini_file:
-    dest: /etc/ansible/facts.d/keystone.fact
-    section: general
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: keystone
     option: need_db_sync
     value: False
   when: dbsync | succeeded
