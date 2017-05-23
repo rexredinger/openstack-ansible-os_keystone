@@ -24,7 +24,7 @@ rpc_backend = {{ keystone_rpc_backend }}
 transport_url = rabbit://{% for host in keystone_rabbitmq_servers.split(',') %}{{ keystone_rabbitmq_userid }}:{{ keystone_rabbitmq_password }}@{{ host }}:{{ keystone_rabbitmq_port }}{% if not loop.last %},{% else %}/{{ keystone_rabbitmq_vhost }}{% endif %}{% endfor %}
 
 [oslo_messaging_rabbit]
-rabbit_use_ssl = {{ keystone_rabbitmq_use_ssl }}
+ssl = {{ keystone_rabbitmq_use_ssl }}
 {% endif %}
 
 {% if keystone_ceilometer_enabled %}
