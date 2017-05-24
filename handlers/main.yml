@@ -14,9 +14,7 @@
 # limitations under the License.
 
 - name: Restart web server on first node
-  debug:
-    msg: "Restarting web server on first node"
-  changed_when: true
+  command: "/bin/true"
   notify:
     - Restart web server
     - Wait for web server to complete starting
@@ -26,9 +24,7 @@
     - keystone-config
 
 - name: Restart web server on other nodes
-  debug:
-    msg: "Restarting web server on other nodes"
-  changed_when: true
+  command: "/bin/true"
   notify:
     - Restart web server
     - Wait for web server to complete starting
@@ -65,9 +61,7 @@
     - keystone-config
 
 - name: Restart uWSGI on first node
-  debug:
-    msg: "Restart uWSGI on first node"
-  changed_when: true
+  command: "/bin/true"
   when:
     - inventory_hostname == groups['keystone_all'][0]
   notify:
@@ -79,9 +73,7 @@
     - keystone-config
 
 - name: Restart uWSGI on other nodes
-  debug:
-    msg: "Restart uWSGI on other nodes"
-  changed_when: true
+  command: "/bin/true"
   when:
     - inventory_hostname != groups['keystone_all'][0]
   notify:
