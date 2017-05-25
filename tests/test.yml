@@ -19,12 +19,6 @@
 # Prepare the host
 - include: common/test-prepare-host.yml
 
-# Clone repository
-- include: test-clone-repo.yml
-  when: >
-    keystone_dev_local_directory is not defined or
-    keystone_dev_force_clone
-
 # Prepare the containers
 - include: common/test-prepare-containers.yml
 

@@ -19,9 +19,6 @@
 # Install upgrade benchmarking
 - include: test-benchmark-keystone-upgrade.yml
 
-# Update repo
-- include: test-clone-repo.yml
-
 # Install Keystone
 - include: common/test-install-keystone.yml
 

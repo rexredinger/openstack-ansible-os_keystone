@@ -22,11 +22,6 @@
 # Prepare the host
 - include: common/test-prepare-host.yml
 
-# Clone the repo
-- include: test-clone-repo.yml
-  vars:
-    keystone_dev_git_branch: "stable/ocata"
-
 # Prepare the containers
 - include: common/test-prepare-containers.yml
 
