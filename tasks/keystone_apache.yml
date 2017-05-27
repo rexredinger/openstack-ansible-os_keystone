@@ -40,8 +40,8 @@
   command: "{{ (item.state == 'present') | ternary('a2enmod','a2dismod') }} {{ item.name }}"
   register: _apache2_module
   changed_when:
-    - _apache2_module.stdout.find('{{ item.name }} already') == -1
-    - _apache2_module.stderr.find('{{ item.name }} does not exist') == -1
+    - "_apache2_module.stdout.find(item.name + ' already') == -1"
+    - "_apache2_module.stderr.find(item.name + ' does not exist') == -1"
   failed_when: false
   with_items:
     - name: "ssl"
