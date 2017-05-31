@@ -13,44 +13,104 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Restart service
+- name: Restart web server
   service:
-    name: "{{ keystone_system_service_name }}"
+    name: "{{ (keystone_apache_enabled | bool) | ternary(keystone_system_service_name, 'nginx') }}"
+    enabled: yes
     state: restarted
-    pattern: "{{ keystone_system_service_name }}"
+  notify:
+    - Wait for web server to complete starting
   register: _restart
-  until: _restart|success
+  until: _restart | success
   retries: 5
   delay: 2
-  when: (keystone_apache_enabled | bool) or (keystone_mod_wsgi_enabled | bool)
 
-- name: Restart Nginx
-  service:
-    name: nginx
-    state: restarted
-  register: keystone_restart
-  until: keystone_restart | success
+- name: Wait for web server to complete starting
+  wait_for:
+    port: "{{ item }}"
+    timeout: 25
+    delay: 10
+  with_items:
+    - "{{ keystone_service_port }}"
+    - "{{ keystone_admin_port }}"
+  register: _wait_check
+  until: _wait_check | success
   retries: 5
-  delay: 2
-  when: not keystone_apache_enabled | bool
 
 - name: Restart Keystone APIs
+  command: "/bin/true"
+  notify:
+    - Stop uWSGI
+    - Copy new policy file into place
+    - Start uWSGI
+    - Wait for uWSGI socket to be ready
+
+- name: Stop uWSGI
   service:
     name: "{{ item }}"
-    state: "restarted"
-  register: keystone_restart
-  until: keystone_restart | success
+    state: "stopped"
+  register: _stop
+  until: _stop | success
   retries: 5
   delay: 2
   with_items: "{{ keystone_wsgi_program_names }}"
-  when: not keystone_mod_wsgi_enabled | bool
+  when:
+    - not keystone_mod_wsgi_enabled | bool
+  tags:
+    - keystone-config
+
+# Note (odyssey4me):
+# The policy.json file is currently read continually by the services
+# and is not only read on service start. We therefore cannot template
+# directly to the file read by the service because the new policies
+# may not be valid until the service restarts. This is particularly
+# important during a major upgrade. We therefore only put the policy
+# file in place after the service has been stopped.
+#
+- name: Copy new policy file into place
+  copy:
+    src: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
+    dest: "/etc/keystone/policy.json"
+    owner: "root"
+    group: "{{ keystone_system_group_name }}"
+    mode: "0640"
+    remote_src: yes
+  tags:
+    - keystone-config
+
+- name: Start uWSGI
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: "started"
+  register: _start
+  until: _start | success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_wsgi_program_names }}"
+  when:
+    - not keystone_mod_wsgi_enabled | bool
+
+- name: Wait for uWSGI socket to be ready
+  wait_for:
+    port: "{{ item }}"
+    timeout: 25
+    delay: 10
+  with_items:
+    - "{{ keystone_uwsgi_ports['keystone-wsgi-admin']['socket'] }}"
+    - "{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}"
+  when:
+    - not keystone_mod_wsgi_enabled | bool
+  register: _wait_check
+  until: _wait_check | success
+  retries: 5
 
 - name: Restart Shibd
   service:
     name: "shibd"
+    enabled: yes
     state: "restarted"
-    pattern: "shibd"
-  register: shibd_restart
-  until: shibd_restart|success
+  register: _restart
+  until: _restart | success
   retries: 5
   delay: 2

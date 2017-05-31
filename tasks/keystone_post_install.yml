@@ -32,12 +32,12 @@
       config_overrides: "{{ keystone_keystone_paste_ini_overrides }}"
       config_type: "ini"
     - src: "policy.json.j2"
-      dest: "/etc/keystone/policy.json"
+      dest: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
       config_overrides: "{{ keystone_policy_overrides }}"
       config_type: "json"
   notify:
     - Restart Keystone APIs
-    - Restart service
+    - Restart web server
 
 - name: Drop Keystone Configs
   copy:
@@ -48,5 +48,5 @@
     mode: "0644"
   notify:
     - Restart Keystone APIs
-    - Restart service
+    - Restart web server
 

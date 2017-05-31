@@ -32,7 +32,7 @@
     creates: "/etc/shibboleth/sp-cert.pem"
   when: inventory_hostname == groups['keystone_all'][0]
   notify:
-    - Restart service
+    - Restart web server
     - Restart Shibd
 
 - name: Store sp cert
@@ -64,8 +64,7 @@
     mode: "0640"
   when: inventory_hostname != groups['keystone_all'][0]
   notify:
-    - Restart service on first node
-    - Restart service on other nodes
+    - Restart web server
     - Restart Shibd
 
 - name: Distribute sp cert
@@ -77,7 +76,7 @@
     mode: "0640"
   when: inventory_hostname != groups['keystone_all'][0]
   notify:
-    - Restart service
+    - Restart web server
     - Restart Shibd
 
 - name: Set appropriate file ownership on the Shibboleth SP key-pair
@@ -90,5 +89,5 @@
     - "/etc/shibboleth/sp-key.pem"
   when: inventory_hostname != groups['keystone_all'][0]
   notify:
-    - Restart service
+    - Restart web server
     - Restart Shibd

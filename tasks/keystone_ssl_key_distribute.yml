@@ -20,6 +20,8 @@
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
     mode: "0640"
+  notify:
+    - Restart web server
 
 - name: Distribute self signed ssl cert
   copy:
@@ -28,6 +30,8 @@
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"
     mode: "0640"
+  notify:
+    - Restart web server
 
 - name: Ensure keystone user owns the self-signed key and certificate
   file:
@@ -37,3 +41,5 @@
   with_items:
     - "{{ keystone_ssl_key }}"
     - "{{ keystone_ssl_cert }}"
+  notify:
+    - Restart web server

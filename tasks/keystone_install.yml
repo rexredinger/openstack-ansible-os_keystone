@@ -13,13 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: keystone_install_apt.yml
-  static: no
-  when: ansible_pkg_mgr == 'apt'
-
-- include: keystone_install_yum.yml
-  static: no
-  when: ansible_pkg_mgr == 'yum'
+- include: "keystone_install_{{ ansible_pkg_mgr }}.yml"
 
 - name: Create WSGI symlinks
   file:
@@ -32,6 +26,8 @@
       dest: admin
     - src: "{{ keystone_bin }}/keystone-wsgi-public"
       dest: main
+  notify:
+    - Restart web server
 
 - name: Create developer mode constraint file
   copy:
@@ -85,7 +81,7 @@
     - keystone_get_venv | changed or keystone_venv_dir | changed
   notify:
     - Restart Keystone APIs
-    - Restart service
+    - Restart web server
 
 - name: Install pip packages
   pip:
@@ -104,7 +100,7 @@
   when: keystone_developer_mode | bool
   notify:
     - Restart Keystone APIs
-    - Restart service
+    - Restart web server
 
 - name: Update virtualenv path
   command: >

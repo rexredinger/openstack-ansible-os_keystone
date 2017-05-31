@@ -40,7 +40,7 @@
     group: "root"
   with_items: "{{ keystone_apache_configs }}"
   notify:
-    - Restart service
+    - Restart web server
 
 - name: Disable default apache site
   file:
@@ -48,7 +48,7 @@
     state: "absent"
   with_items: "{{ keystone_apache_default_sites }}"
   notify:
-    - Restart service
+    - Restart web server
 
 - name: Enabled keystone vhost
   file:
@@ -59,14 +59,14 @@
     - keystone_apache_site_available is defined
     - keystone_apache_site_enabled is defined
   notify:
-    - Restart service
+    - Restart web server
 
 - name: Ensure Apache ServerName
   lineinfile:
     dest: "{{ keystone_apache_conf }}"
     line: "ServerName {{ ansible_hostname }}"
   notify:
-    - Restart service
+    - Restart web server
 
 - name: Ensure Apache ServerTokens
   lineinfile:
@@ -74,7 +74,7 @@
     regexp: '^ServerTokens'
     line: "ServerTokens {{ keystone_apache_servertokens }}"
   notify:
-    - Restart service
+    - Restart web server
 
 - name: Ensure Apache ServerSignature
   lineinfile:
@@ -82,7 +82,7 @@
     regexp: '^ServerSignature'
     line: "ServerSignature {{ keystone_apache_serversignature }}"
   notify:
-    - Restart service
+    - Restart web server
 
 ## NOTE(cloudnull):
 ## Module enable/disable process is only functional on Debian based systems.
@@ -93,7 +93,7 @@
   when:
     - ansible_pkg_mgr == 'apt'
   notify:
-    - Restart service
+    - Restart web server
 
 ## NOTE(cloudnull):
 ## Module enable/disable process is only functional on Debian based systems.
@@ -105,7 +105,7 @@
   when:
     - ansible_pkg_mgr == 'apt'
   notify:
-    - Restart service
+    - Restart web server
 
 ## NOTE(cloudnull):
 ## Module enable/disable process is only functional on Debian based systems.
@@ -116,7 +116,7 @@
   when:
     - ansible_pkg_mgr == 'apt'
   notify:
-    - Restart service
+    - Restart web server
 
 ## NOTE(andymccr):
 ## We need to enable a module for httpd on RedHat/CentOS using LoadModule inside conf files
@@ -128,4 +128,4 @@
   when:
    - ansible_pkg_mgr == 'yum'
   notify:
-    - Restart service
+    - Restart web server

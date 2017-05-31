@@ -21,4 +21,4 @@
   when: keystone_idp != {}
   notify:
     - Restart Keystone APIs
-    - Restart service
+    - Restart web server
