@@ -54,8 +54,6 @@ keystone_system_shell: /bin/bash
 keystone_system_comment: keystone system user
 keystone_system_user_home: "/var/lib/{{ keystone_system_user_name }}"
 
-keystone_rpc_backend: rabbit
-
 ## Drivers
 keystone_auth_methods: "password,token"
 keystone_identity_driver: sql
