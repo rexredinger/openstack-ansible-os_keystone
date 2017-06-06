@@ -51,7 +51,7 @@
 
 - name: Install distro packages
   package:
-    name: "{{ item }}"
+    name: "{{ keystone_package_list }}"
     state: "{{ keystone_package_state }}"
     update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
     cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
@@ -59,86 +59,9 @@
   until: install_packages | success
   retries: 5
   delay: 2
-  with_items: "{{ keystone_distro_packages }}"
-
-- name: Install web server distro packages
-  package:
-    name: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
-    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
-  register: install_packages
-  until: install_packages | success
-  retries: 5
-  delay: 2
-  with_items: "{{ (keystone_apache_enabled | bool) | ternary(keystone_apache_distro_packages, keystone_nginx_distro_packages) }}"
   notify:
     - Restart web server on first node
     - Restart web server on other nodes
-
-- name: Install mod_wsgi/mod_proxy_uwsgi distro packages
-  package:
-    name: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
-    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
-  register: install_packages
-  until: install_packages | success
-  retries: 5
-  delay: 2
-  with_items: "{{ (keystone_mod_wsgi_enabled | bool) | ternary(keystone_mod_wsgi_distro_packages, keystone_mod_proxy_uwsgi_distro_packages) }}"
-  notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
-
-- name: Install distro packages for IdP
-  package:
-    name: "{{ item }}"
-    state: "{{ (keystone_idp != {}) | ternary(keystone_package_state, 'absent') }}"
-    autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
-    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
-    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
-  when:
-    - keystone_apache_enabled | bool
-  register: install_packages
-  until: install_packages | success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_idp_distro_packages }}"
-  notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
-
-- name: Install distro packages for SP
-  package:
-    name: "{{ item }}"
-    state: "{{ (keystone_sp != {}) | ternary(keystone_package_state, 'absent') }}"
-    autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
-    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
-    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
-  when:
-    - keystone_apache_enabled | bool
-  register: install_packages
-  until: install_packages | success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_sp_distro_packages }}"
-  notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
-
-- name: Install distro packages for developer mode
-  package:
-    name: "{{ item }}"
-    state: "{{ (keystone_developer_mode | bool) | ternary(keystone_package_state, 'absent') }}"
-    autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
-    update_cache: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
-    cache_valid_time: "{{ (ansible_pkg_mgr == 'apt') | ternary(cache_timeout, omit) }}"
-  register: install_packages
-  until: install_packages | success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_developer_mode_distro_packages }}"
 
 - name: Create developer mode constraint file
   copy:
