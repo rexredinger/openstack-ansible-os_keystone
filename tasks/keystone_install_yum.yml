@@ -36,76 +36,6 @@
     - { src: "/etc/pki/tls/private", dest: "/etc/ssl/private" }
     - { src: "/var/log/httpd", dest: "/var/log/apache2" }
 
-- name: Install yum packages
-  yum:
-    pkg: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_distro_packages }}"
-
-- name: Install Apache yum packages
-  yum:
-    pkg: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_apache_distro_packages }}"
-  when:
-    - keystone_apache_enabled | bool
-
-- name: Install mod_wsgi yum packages
-  yum:
-    pkg: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_mod_wsgi_distro_packages }}"
-  when:
-    - keystone_mod_wsgi_enabled | bool
-
-- name: Install mod_proxy_uwsgi apt packages
-  yum:
-    pkg: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_mod_proxy_uwsgi_distro_packages }}"
-  when:
-    - not keystone_mod_wsgi_enabled | bool
-
-- name: Install Nginx yum packages
-  yum:
-    pkg: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_nginx_distro_packages }}"
-  when:
-    - not keystone_apache_enabled | bool
-
-- name: Install IdP yum packages
-  yum:
-    pkg: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_idp_distro_packages }}"
-  when:
-    - keystone_idp is defined
-
 #TODO(cloudnull) Remove this task once we move to Ansible 2.1
 # where we can leverage the `yum_repository` module:
 # https://docs.ansible.com/ansible/yum_repository_module.html
@@ -129,7 +59,7 @@
   when:
     - keystone_sp is defined
 
-- name: Install SP yum packages
+- name: Install yum packages
   yum:
     pkg: "{{ item }}"
     state: "{{ keystone_package_state }}"
@@ -137,18 +67,4 @@
   until: install_packages|success
   retries: 5
   delay: 2
-  with_items: "{{ keystone_sp_distro_packages }}"
-  when:
-    - keystone_sp is defined
-
-- name: Install developer mode yum packages
-  yum:
-    pkg: "{{ item }}"
-    state: "{{ keystone_package_state }}"
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  with_items: "{{ keystone_developer_mode_distro_packages }}"
-  when:
-    - keystone_developer_mode | bool
+  with_items: "{{ keystone_package_list }}"
