@@ -13,6 +13,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#
+# Compile a list of the distro packages to install based on
+# whether the host is in the host group and the service is
+# enabled.
+#
+keystone_package_list: |-
+  {% set packages = keystone_distro_packages %}
+  {% if keystone_apache_enabled | bool %}
+  {%   set _ = packages.extend(keystone_apache_distro_packages) %}
+  {%   if keystone_idp != {} %}
+  {%     set _ = packages.extend(keystone_idp_distro_packages) %}
+  {%   endif %}
+  {%   if keystone_sp != {} %}
+  {%     set _ = packages.extend(keystone_sp_distro_packages) %}
+  {%   endif %}
+  {% else %}
+  {%   set _ = packages.extend(keystone_nginx_distro_packages) %}
+  {% endif %}
+  {% if keystone_mod_wsgi_enabled | bool %}
+  {%   set _ = packages.extend(keystone_mod_wsgi_distro_packages) %}
+  {% else %}
+  {%   set _ = packages.extend(keystone_mod_proxy_uwsgi_distro_packages) %}
+  {% endif %}
+  {% if keystone_developer_mode | bool %}
+  {%   set _ = packages.extend(keystone_developer_mode_distro_packages) %}
+  {% endif %}
+  {{ packages }}
+
 # These vars find a file on the deployment node, if it exists - otherwise the result is empty.
 keystone_paste_user_content: "{{ lookup('pipe', 'cat ' ~ keystone_paste_default_file_path ~ ' 2>/dev/null || true') }}"
 keystone_policy_user_content: "{{ lookup('pipe', 'cat ' ~ keystone_policy_default_file_path ~ ' 2>/dev/null || true') }}"
