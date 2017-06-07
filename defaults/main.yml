@@ -423,15 +423,15 @@ keystone_requires_pip_packages:
 # Common pip packages
 keystone_pip_packages:
   - argparse
+  - cryptography
   - keystone
   - keystonemiddleware
   - ldappool
   - lxml
-  - PyMySQL
   - oslo.log
   - oslo.middleware
   - pbr
-  - pycrypto
+  - PyMySQL
   - pysaml2
   - python-keystoneclient
   - python-ldap
