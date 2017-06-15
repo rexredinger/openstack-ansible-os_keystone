@@ -46,7 +46,6 @@
     system: "yes"
     createhome: "yes"
     home: "{{ keystone_system_user_home }}"
-    generate_ssh_key: "yes"
 
 - name: Create keystone dir
   file:
