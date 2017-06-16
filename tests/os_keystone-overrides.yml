@@ -28,7 +28,7 @@ tempest_test_whitelist:
 
 external_lb_vip_address: 10.1.0.1
 internal_lb_vip_address: 10.1.0.1
-test_keystone_host: "{{ (keystone_upgrade is defined) | ternary(external_lb_vip_address, hostvars[groups[test_keystone_group][0]]['ansible_host']) }}"
+test_keystone_host: "{{ external_lb_vip_address }}"
 
 # For upgrades we need haproxy variables
 haproxy_default_services:
