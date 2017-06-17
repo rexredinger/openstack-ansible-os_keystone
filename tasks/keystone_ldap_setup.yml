@@ -35,10 +35,8 @@
     mode: "0640"
   with_dict: "{{ keystone_ldap }}"
   notify:
-    - Restart uWSGI on first node
-    - Restart uWSGI on other nodes
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart uWSGI
+    - Restart web server
 
 # Bug 1547542 - Older versions of the keystone role would deploy a blank
 # keystone.Default.conf and this will cause errors when adding LDAP-backed
@@ -49,7 +47,5 @@
     state: absent
   when: keystone_ldap.Default is not defined
   notify:
-    - Restart uWSGI on first node
-    - Restart uWSGI on other nodes
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart uWSGI
+    - Restart web server

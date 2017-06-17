@@ -24,8 +24,7 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart web server
 
 - name: Configure custom nginx log format
   lineinfile:
@@ -33,8 +32,7 @@
     dest: "/etc/nginx/nginx.conf"
     line: "log_format custom '{{ keystone_nginx_access_log_format_combined }} {{ keystone_nginx_access_log_format_extras }}';"
   notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart web server
 
 # Configure app
 - name: Configure virtual hosts
@@ -43,8 +41,7 @@
     dest: "/etc/nginx/{{ keystone_nginx_conf_path }}/{{ item }}.conf"
   with_items: "{{ keystone_wsgi_program_names }}"
   notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart web server
 
 - name: Link to enable virtual hosts
   file:
@@ -54,5 +51,4 @@
   with_items: "{{ keystone_wsgi_program_names }}"
   when: ansible_os_family == "Debian"
   notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart web server

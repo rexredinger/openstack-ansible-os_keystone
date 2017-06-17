@@ -30,8 +30,7 @@
   retries: 5
   delay: 2
   notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart web server
 
 - name: Set appropriate file ownership on the IdP self-signed cert
   file:
