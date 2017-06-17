@@ -29,8 +29,7 @@
     -extensions v3_ca
     creates={{ keystone_ssl_cert }}
   notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart web server
 
 - name: Ensure keystone user owns the self-signed key and certificate
   file:
@@ -42,5 +41,4 @@
     - "{{ keystone_ssl_key }}"
     - "{{ keystone_ssl_cert }}"
   notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart web server

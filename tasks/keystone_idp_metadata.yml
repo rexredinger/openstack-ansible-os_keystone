@@ -20,7 +20,4 @@
   become_user: "{{ keystone_system_user_name }}"
   when: keystone_idp != {}
   notify:
-    - Restart uWSGI on first node
-    - Restart uWSGI on other nodes
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart uWSGI

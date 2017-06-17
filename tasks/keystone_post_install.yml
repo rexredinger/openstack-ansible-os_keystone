@@ -44,10 +44,8 @@
       config_overrides: "{{ keystone_policy_overrides }}"
       config_type: "json"
   notify:
-    - Restart uWSGI on first node
-    - Restart uWSGI on other nodes
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart uWSGI
+    - Restart web server
 
 - name: Copy Keystone Federation SP SSO callback template
   copy:
@@ -59,10 +57,8 @@
   when:
     - keystone_idp != {}
   notify:
-    - Restart uWSGI on first node
-    - Restart uWSGI on other nodes
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart uWSGI
+    - Restart web server
 
 - name: Clean up Keystone Federation SP SSO callback template
   file:
@@ -71,7 +67,5 @@
   when:
     - keystone_idp == {}
   notify:
-    - Restart uWSGI on first node
-    - Restart uWSGI on other nodes
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart uWSGI
+    - Restart web server

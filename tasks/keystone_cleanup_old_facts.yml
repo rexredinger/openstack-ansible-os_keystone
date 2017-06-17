@@ -16,16 +16,16 @@
 # TODO(odyssey4me):
 # This file and the task calling it may be removed in Queens.
 
-- name: Convert the old fact format to the new fact format
-  ini_file:
-    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
-    section: keystone
-    option: need_db_sync
-    value: "{{ ansible_local['keystone']['general']['need_db_sync'] | bool }}"
-
 - name: Remove the old fact file
   file:
     path: "/etc/ansible/facts.d/keystone.fact"
+    state: absent
+
+- name: Remove the old db_sync fact
+  ini_file:
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: keystone
+    option: "need_db_sync"
     state: absent
 
 - name: refresh local facts

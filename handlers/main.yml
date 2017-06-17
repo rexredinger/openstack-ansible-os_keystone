@@ -13,26 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Restart web server on first node
-  command: "/bin/true"
-  notify:
-    - Restart web server
-    - Wait for web server to complete starting
-  when:
-    - inventory_hostname == groups['keystone_all'][0]
-  tags:
-    - keystone-config
-
-- name: Restart web server on other nodes
-  command: "/bin/true"
-  notify:
-    - Restart web server
-    - Wait for web server to complete starting
-  when:
-    - inventory_hostname != groups['keystone_all'][0]
-  tags:
-    - keystone-config
-
 - name: Restart web server
   service:
     name: "{{ (keystone_apache_enabled | bool) | ternary(keystone_system_service_name, 'nginx') }}"
@@ -43,8 +23,6 @@
   until: _restart | success
   retries: 5
   delay: 2
-  tags:
-    - keystone-config
 
 - name: Wait for web server to complete starting
   wait_for:
@@ -57,32 +35,7 @@
   register: _wait_check
   until: _wait_check | success
   retries: 5
-  tags:
-    - keystone-config
-
-- name: Restart uWSGI on first node
-  command: "/bin/true"
-  when:
-    - inventory_hostname == groups['keystone_all'][0]
-  notify:
-    - Stop uWSGI
-    - Copy new policy file into place
-    - Start uWSGI
-    - Wait for uWSGI socket to be ready
-  tags:
-    - keystone-config
-
-- name: Restart uWSGI on other nodes
-  command: "/bin/true"
-  when:
-    - inventory_hostname != groups['keystone_all'][0]
-  notify:
-    - Stop uWSGI
-    - Copy new policy file into place
-    - Start uWSGI
-    - Wait for uWSGI socket to be ready
-  tags:
-    - keystone-config
+  listen: "Restart web server"
 
 - name: Stop uWSGI
   service:
@@ -96,8 +49,7 @@
   with_items: "{{ keystone_wsgi_program_names }}"
   when:
     - not keystone_mod_wsgi_enabled | bool
-  tags:
-    - keystone-config
+  listen: "Restart uWSGI"
 
 # Note (odyssey4me):
 # The policy.json file is currently read continually by the services
@@ -115,8 +67,7 @@
     group: "{{ keystone_system_group_name }}"
     mode: "0640"
     remote_src: yes
-  tags:
-    - keystone-config
+  listen: "Restart uWSGI"
 
 - name: Start uWSGI
   service:
@@ -131,8 +82,7 @@
   with_items: "{{ keystone_wsgi_program_names }}"
   when:
     - not keystone_mod_wsgi_enabled | bool
-  tags:
-    - keystone-config
+  listen: "Restart uWSGI"
 
 - name: Wait for uWSGI socket to be ready
   wait_for:
@@ -147,8 +97,7 @@
   register: _wait_check
   until: _wait_check | success
   retries: 5
-  tags:
-    - keystone-config
+  listen: "Restart uWSGI"
 
 - name: Restart Shibd
   service:
@@ -160,13 +109,3 @@
   until: _restart | success
   retries: 5
   delay: 2
-  tags:
-    - keystone-config
-
-- name: Perform a Keystone DB sync contract
-  command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
-  become: yes
-  become_user: "{{ keystone_system_user_name }}"
-  tags:
-    - keystone-config
-

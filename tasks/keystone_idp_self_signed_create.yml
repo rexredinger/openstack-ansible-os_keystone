@@ -33,8 +33,7 @@
   when: >
     inventory_hostname == groups['keystone_all'][0]
   notify:
-    - Restart web server on first node
-    - Restart web server on other nodes
+    - Restart web server
 
 - name: Set appropriate file ownership on the IdP self-signed cert
   file:
