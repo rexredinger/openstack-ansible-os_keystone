@@ -57,7 +57,6 @@
     system: "yes"
     createhome: "yes"
     home: "{{ keystone_system_user_home }}"
-    generate_ssh_key: "yes"
   delegate_to: "{{ item }}"
   with_items: "{{ ansible_play_hosts }}"
   when: "inventory_hostname == ansible_play_hosts[0]"

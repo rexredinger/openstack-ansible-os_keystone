@@ -13,6 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Generate the keystone system user ssh key
+  user:
+    name: "{{ keystone_system_user_name }}"
+    generate_ssh_key: "yes"
+  delegate_to: "{{ item }}"
+  with_items: "{{ ansible_play_hosts }}"
+  when: "inventory_hostname == ansible_play_hosts[0]"
+
 - name: Retrieve default configuration files
   uri:
     url: "{{ item }}"
