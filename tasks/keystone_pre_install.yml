@@ -56,7 +56,6 @@
     system: "yes"
     createhome: "yes"
     home: "{{ keystone_system_user_home }}"
-    generate_ssh_key: "yes"
   delegate_to: "{{ item }}"
   with_items: "{{ groups['keystone_all'] }}"
   when: "{{ inventory_hostname == groups['keystone_all'][0] }}"

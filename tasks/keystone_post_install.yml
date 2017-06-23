@@ -13,6 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Generate the keystone system user ssh key
+  user:
+    name: "{{ keystone_system_user_name }}"
+    generate_ssh_key: "yes"
+  delegate_to: "{{ item }}"
+  with_items: "{{ groups['keystone_all'] }}"
+  when: "inventory_hostname == groups['keystone_all'][0]"
+
 - name: Copy keystone config
   config_template:
     src: "{{ item.src }}"
