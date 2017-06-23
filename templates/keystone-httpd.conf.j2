@@ -2,14 +2,6 @@
 
 Listen {{ keystone_service_port }}
 <VirtualHost *:{{ keystone_service_port }}>
-{% if keystone_mod_wsgi_enabled | bool -%}
-    WSGIDaemonProcess     keystone-service user={{ keystone_system_user_name }} group={{ keystone_system_group_name }} processes={{ keystone_wsgi_processes }} threads={{ keystone_wsgi_threads }} display-name=%{GROUP} python-path={{ keystone_bin | dirname }}/lib/python2.7/site-packages
-
-    WSGIProcessGroup      keystone-service
-    WSGIScriptAlias       / /var/www/cgi-bin/keystone/main
-    WSGIApplicationGroup  %{GLOBAL}
-    WSGIPassAuthorization On
-    WSGIScriptReloading   Off
 
     <IfVersion >= 2.4>
       ErrorLogFormat "%{cu}t %M"
@@ -66,21 +58,13 @@ Listen {{ keystone_service_port }}
         Order allow,deny
         allow from all
     </Directory>
-{% else %}
+
     ProxyPass / uwsgi://127.0.0.1:{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}/
-{% endif %}
+
 </VirtualHost>
 
 Listen {{ keystone_admin_port }}
 <VirtualHost *:{{ keystone_admin_port }}>
-{% if keystone_mod_wsgi_enabled | bool -%}
-    WSGIDaemonProcess     keystone-admin user={{ keystone_system_user_name }} group={{ keystone_system_group_name }} processes={{ keystone_wsgi_processes }} threads={{ keystone_wsgi_threads }} display-name=%{GROUP} python-path={{ keystone_bin | dirname }}/lib/python2.7/site-packages
-
-    WSGIProcessGroup      keystone-admin
-    WSGIScriptAlias       / /var/www/cgi-bin/keystone/admin
-    WSGIApplicationGroup  %{GLOBAL}
-    WSGIPassAuthorization On
-    WSGIScriptReloading   Off
 
     <IfVersion >= 2.4>
       ErrorLogFormat "%{cu}t %M"
@@ -111,11 +95,10 @@ Listen {{ keystone_admin_port }}
         Order allow,deny
         allow from all
     </Directory>
-{% else -%}
+
     ProxyPass / uwsgi://127.0.0.1:{{ keystone_uwsgi_ports['keystone-wsgi-admin']["socket"] }}/
-{% endif %}
+
 </VirtualHost>
-{% if not keystone_mod_wsgi_enabled | bool -%}
+
 ProxyPass /identity uwsgi://127.0.0.1:{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}/
 ProxyPass /identity_admin uwsgi://127.0.0.1:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['socket'] }}/
-{% endif %}

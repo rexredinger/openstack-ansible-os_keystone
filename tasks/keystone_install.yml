@@ -49,6 +49,22 @@
     - ansible_pkg_mgr == 'yum'
     - keystone_sp != {}
 
+# If the web server being removed was never installed, this task will fail when trying
+# to stop/disable it. The task is therefore set to never fail.
+- name: Ensure other web server is not running/enabled
+  service:
+    name: "{{ (keystone_web_server == 'nginx') | ternary(keystone_system_service_name, 'nginx') }}"
+    enabled: no
+    state: stopped
+    daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
+  failed_when: false
+
+- name: Remove other web server distro packages and mod_wsgi
+  package:
+    name: "{{ ((keystone_web_server == 'nginx') | ternary(keystone_apache_distro_packages, keystone_nginx_distro_packages)) + keystone_mod_wsgi_distro_packages }}"
+    state: absent
+    autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
+
 - name: Install distro packages
   package:
     name: "{{ keystone_package_list }}"

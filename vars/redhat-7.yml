@@ -33,12 +33,14 @@ keystone_apache_distro_packages:
   - httpd
   - httpd-tools
   - mod_ssl
+  - mod_proxy_uwsgi
 
+# TODO(odyssey4me):
+# We can remove this in R because we only need this to
+# handle upgrades from O->P in order to remove the
+# package when switching to the new configuration.
 keystone_mod_wsgi_distro_packages:
   - mod_wsgi
-
-keystone_mod_proxy_uwsgi_distro_packages:
-  - mod_proxy_uwsgi
 
 keystone_nginx_distro_packages:
   - nginx

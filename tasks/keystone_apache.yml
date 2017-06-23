@@ -49,7 +49,7 @@
     - name: "shib2"
       state: "{{ ( keystone_sp != {} ) | ternary('present', 'absent') }}"
     - name: "proxy_http"
-      state: "{{ (keystone_mod_wsgi_enabled | bool) | ternary('absent', 'present') }}"
+      state: "present"
   when:
     - ansible_pkg_mgr == 'apt'
   notify:
@@ -61,7 +61,7 @@
   lineinfile:
     dest: '/etc/httpd/conf.modules.d/00-proxy.conf'
     line: 'LoadModule proxy_uwsgi_module modules/mod_proxy_uwsgi.so'
-    state: "{{ (keystone_mod_wsgi_enabled | bool) | ternary('absent', 'present') }}"
+    state: "present"
   when:
    - ansible_pkg_mgr == 'yum'
   notify:

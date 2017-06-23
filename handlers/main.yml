@@ -15,7 +15,7 @@
 
 - name: Restart web server
   service:
-    name: "{{ (keystone_apache_enabled | bool) | ternary(keystone_system_service_name, 'nginx') }}"
+    name: "{{ (keystone_web_server == 'apache') | ternary(keystone_system_service_name, 'nginx') }}"
     enabled: yes
     state: restarted
     daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
@@ -47,8 +47,6 @@
   retries: 5
   delay: 2
   with_items: "{{ keystone_wsgi_program_names }}"
-  when:
-    - not keystone_mod_wsgi_enabled | bool
   listen: "Restart uWSGI"
 
 # Note (odyssey4me):
@@ -80,8 +78,6 @@
   retries: 5
   delay: 2
   with_items: "{{ keystone_wsgi_program_names }}"
-  when:
-    - not keystone_mod_wsgi_enabled | bool
   listen: "Restart uWSGI"
 
 - name: Wait for uWSGI socket to be ready
@@ -92,8 +88,6 @@
   with_items:
     - "{{ keystone_uwsgi_ports['keystone-wsgi-admin']['socket'] }}"
     - "{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}"
-  when:
-    - not keystone_mod_wsgi_enabled | bool
   register: _wait_check
   until: _wait_check | success
   retries: 5

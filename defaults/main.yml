@@ -172,17 +172,26 @@ keystone_service_adminurl: "{{ keystone_service_adminurl_v3 }}"
 ## Set this value to override the "public_endpoint" keystone.conf variable
 #keystone_public_endpoint: "{{ keystone_service_publicuri }}"
 
+# This is the web server that will handle all requests and will act as a
+# reverse proxy to uWSGI. If internal TLS/SSL certificates are configured,
+# they are implemented in this web server's configuration. Using a web server
+# for endpoints is far better for scale and allows the use of additional
+# modules to improve performance or security, leaving uWSGI to only have
+# to be used for running the service.
+#
+# Note:
+# The default is nginx, but apache will be used if Keystone is configured
+# as a Federated Service provider.
+# TODO (odyssey4me): Convert the SP implementation to use nginx instead
+# so that we do not have to be concerned with multiple web servers.
+#
+keystone_web_server: "{{ (keystone_sp != {}) | ternary('apache', 'nginx') }}"
+
 ## Apache setup
-keystone_apache_enabled: true
-keystone_mod_wsgi_enabled: true
 keystone_apache_log_level: info
 keystone_apache_custom_log_format: combined
 keystone_apache_servertokens: "Prod"
 keystone_apache_serversignature: "Off"
-keystone_wsgi_threads: 1
-## Cap the maximun number of processes when a user value is unspecified.
-keystone_wsgi_processes_max: 16
-keystone_wsgi_processes: "{{ [[ansible_processor_vcpus|default(1), 1] | max * 2, keystone_wsgi_processes_max] | min }}"
 
 ## Apache MPM tunables
 keystone_httpd_mpm_backend: event
@@ -204,6 +213,10 @@ keystone_nginx_extra_conf:
   - keepalive_timeout   70;
 
 ## uWSGI setup
+keystone_wsgi_threads: 1
+## Cap the maximun number of processes when a user value is unspecified.
+keystone_wsgi_processes_max: 16
+keystone_wsgi_processes: "{{ [[ansible_processor_vcpus|default(1), 1] | max * 2, keystone_wsgi_processes_max] | min }}"
 keystone_wsgi_public_program_name: keystone-wsgi-public
 keystone_wsgi_admin_program_name: keystone-wsgi-admin
 keystone_wsgi_program_names:
