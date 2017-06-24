@@ -95,7 +95,6 @@
 - include: keystone_db_setup.yml
   when:
     - "keystone_database_enabled | bool"
-    - "inventory_hostname == ansible_play_hosts[0]"
   tags:
     - keystone-config
 
@@ -103,7 +102,7 @@
   static: no
   when:
     - "'sql' in keystone_token_driver"
-    - inventory_hostname == groups['keystone_all'][0]
+  run_once: yes
   tags:
     - keystone-install
 
@@ -127,7 +126,7 @@
 - include: keystone_service_setup.yml
   when:
     - keystone_service_setup | bool
-    - inventory_hostname == ansible_play_hosts[0]
+  run_once: yes
   tags:
     - keystone-config
 
@@ -141,7 +140,7 @@
   when:
     - keystone_service_setup | bool
     - keystone_sp != {}
-    - inventory_hostname == groups['keystone_all'][0]
+  run_once: yes
   tags:
     - keystone-config
 
@@ -161,5 +160,6 @@
   register: keystone_doctor
   failed_when: not debug and keystone_doctor.rc != 0
   changed_when: false
+  run_once: yes
   tags:
     - always
