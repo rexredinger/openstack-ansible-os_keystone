@@ -29,3 +29,8 @@ keystone2
 
 [utility_all]
 keystone1
+
+[haproxy_all:children]
+haproxy
+
+[haproxy]

@@ -19,4 +19,4 @@
     key: "{{ keystone_pubkey | b64decode }}"
   when: keystone_pubkey is defined
   delegate_to: "{{ item }}"
-  with_items: "{{ ansible_play_hosts }}"
+  with_items: "{{ groups['keystone_all'] }}"
