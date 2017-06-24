@@ -15,9 +15,12 @@
 
 - name: Check current state of Keystone DB
   command: "{{ keystone_bin }}/keystone-manage db_sync --check"
+  become: yes
+  become_user: "{{ keystone_system_user_name }}"
   register: keystone_db_sync_check
   failed_when: "keystone_db_sync_check.rc == 1"
   changed_when: "keystone_db_sync_check.rc not in [2, 3, 4]"
+  run_once: yes
 
 - name: Set the db sync local facts
   ini_file:
@@ -63,6 +66,7 @@
   become_user: "{{ keystone_system_user_name }}"
   when:
     - "ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool"
+  run_once: yes
 
 - name: Perform a Keystone DB sync migrate
   command: "{{ keystone_bin }}/keystone-manage db_sync --migrate"
@@ -70,6 +74,7 @@
   become_user: "{{ keystone_system_user_name }}"
   when:
     - "ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool"
+  run_once: yes
 
 - name: Perform a Keystone DB sync contract
   command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
@@ -78,3 +83,4 @@
   when:
     - "(keystone_all_software_updated | default('no')) | bool"
     - "ansible_local['openstack_ansible']['keystone']['need_db_contract'] | bool"
+  run_once: yes

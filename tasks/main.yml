@@ -94,8 +94,7 @@
 
 - include: keystone_db_setup.yml
   when:
-    - keystone_database_enabled | bool
-    - "inventory_hostname == groups['keystone_all'][0]"
+    - "keystone_database_enabled | bool"
   tags:
     - keystone-config
 
@@ -126,7 +125,7 @@
 - include: keystone_service_setup.yml
   when:
     - keystone_service_setup | bool
-    - inventory_hostname == groups['keystone_all'][0]
+  run_once: yes
   tags:
     - keystone-config
 
@@ -140,7 +139,7 @@
   when:
     - keystone_service_setup | bool
     - keystone_sp != {}
-    - inventory_hostname == groups['keystone_all'][0]
+  run_once: yes
   tags:
     - keystone-config
 
