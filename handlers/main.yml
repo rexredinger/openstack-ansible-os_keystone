@@ -56,8 +56,6 @@
   with_items: "{{ keystone_wsgi_program_names }}"
   when:
     - not keystone_mod_wsgi_enabled | bool
-  tags:
-    - keystone-config
 
 # Note (odyssey4me):
 # The policy.json file is currently read continually by the services
@@ -75,8 +73,6 @@
     group: "{{ keystone_system_group_name }}"
     mode: "0640"
     remote_src: yes
-  tags:
-    - keystone-config
 
 - name: Start uWSGI
   service:

@@ -13,8 +13,68 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Perform a Keystone DB sync
-  command: "{{ keystone_bin }}/keystone-manage db_sync"
+- name: Check current state of Keystone DB
+  command: "{{ keystone_bin }}/keystone-manage db_sync --check"
+  register: keystone_db_sync_check
+  failed_when: "keystone_db_sync_check.rc == 1"
+  changed_when: "keystone_db_sync_check.rc not in [2, 3, 4]"
+
+- name: Set the db sync local facts
+  ini_file:
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: keystone
+    option: "{{ item.name }}"
+    value: "{{ item.state }}"
+  with_items:
+    - name: "need_db_expand"
+      state: "{{ (keystone_db_sync_check.rc | int == 2) | bool }}"
+    - name: "need_db_migrate"
+      state: "{{ (keystone_db_sync_check.rc | int in [2, 3] ) | bool }}"
+    - name: "need_db_contract"
+      state: "{{ (keystone_db_sync_check.rc | int in [2, 3, 4]) | bool }}"
+
+- name: Refresh local facts
+  setup:
+    filter: ansible_local
+    gather_subset: "!all"
+  tags:
+    - keystone-config
+
+- name: Ensure keystone service is stopped
+  service:
+    name: "{{ item }}"
+    state: stopped
+  register: keystone_stop
+  failed_when:
+    - "keystone_stop.msg is defined"
+    - "'no service or tool' not in keystone_stop.msg"
+    - "'systemd could not find' not in keystone_stop.msg"
+    - "'Could not find the requested service' not in keystone_stop.msg"
+  with_items:
+    - "{{ keystone_wsgi_program_names }}"
+    - "{{ keystone_system_service_name }}"
+  when:
+    - "(ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool) or
+       (ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool)"
+
+- name: Perform a Keystone DB sync expand
+  command: "{{ keystone_bin }}/keystone-manage db_sync --expand"
   become: yes
   become_user: "{{ keystone_system_user_name }}"
-  register: dbsync
+  when:
+    - "ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool"
+
+- name: Perform a Keystone DB sync migrate
+  command: "{{ keystone_bin }}/keystone-manage db_sync --migrate"
+  become: yes
+  become_user: "{{ keystone_system_user_name }}"
+  when:
+    - "ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool"
+
+- name: Perform a Keystone DB sync contract
+  command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
+  become: yes
+  become_user: "{{ keystone_system_user_name }}"
+  when:
+    - "(keystone_all_software_updated | default('no')) | bool"
+    - "ansible_local['openstack_ansible']['keystone']['need_db_contract'] | bool"

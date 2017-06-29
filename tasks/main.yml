@@ -53,12 +53,14 @@
 - name: refresh local facts
   setup:
     filter: ansible_local
+    gather_subset: "!all"
   tags:
     - keystone-config
 
 - include: keystone_cleanup_old_facts.yml
   when:
-    - "ansible_local['keystone'] is defined"
+    - "('keystone' in ansible_local) or
+       ('need_db_sync' in ansible_local['openstack_ansible']['keystone'])"
   tags:
     - keystone-config
 
@@ -93,18 +95,7 @@
 - include: keystone_db_setup.yml
   when:
     - keystone_database_enabled | bool
-    - inventory_hostname == groups['keystone_all'][0]
-    - ansible_local['openstack_ansible']['keystone']['need_db_sync'] | bool
-  tags:
-    - keystone-config
-
-- name: Disable the need of a db sync on all nodes
-  ini_file:
-    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
-    section: keystone
-    option: need_db_sync
-    value: False
-  when: dbsync | succeeded
+    - "inventory_hostname == groups['keystone_all'][0]"
   tags:
     - keystone-config
 
