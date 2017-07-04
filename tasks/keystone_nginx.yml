@@ -28,11 +28,18 @@
 
 - name: Configure custom nginx log format
   lineinfile:
-    insertbefore: access_log
+    # NOTE(hwoarang) Not every nginx.conf file is the same
+    # so it's best if we just append new stuff after known starting blocks.
+    insertafter: http {
     dest: "/etc/nginx/nginx.conf"
     line: "log_format custom '{{ keystone_nginx_access_log_format_combined }} {{ keystone_nginx_access_log_format_extras }}';"
   notify:
     - Restart web server
+
+- name: Ensure configuration directory exists
+  file:
+    path: "/etc/nginx/{{ keystone_nginx_conf_path }}"
+    state: directory
 
 # Configure app
 - name: Configure virtual hosts
