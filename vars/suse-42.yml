@@ -1,5 +1,6 @@
 ---
 # Copyright 2016, Rackspace US, Inc.
+# Copyright 2017, SUSE LINUX GmbH.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,70 +15,79 @@
 # limitations under the License.
 
 keystone_distro_packages:
-  - debhelper
-  - dh-apparmor
-  - docutils-common
-  - git
-  - libffi-dev
-  - libjs-sphinxdoc
-  - libjs-underscore
-  - libldap2-dev
-  - libsasl2-dev
-  - libxslt1.1
-  - libxslt1-dev
-  - libxml2-dev
-  - python-dev
+  - ca-certificates
+  - cronie
+  - cyrus-sasl-devel
+  - git-core
+  - libffi-devel
+  - libxml2-devel
+  - libxslt-devel
+  - openldap2
+  - openldap2-devel
+  - openssl
+  - python-devel
   - rsync
+  - which
 
 keystone_apache_distro_packages:
   - apache2
   - apache2-utils
-  - libapache2-mod-proxy-uwsgi
+  - apache2-mod_proxy_uwsgi
 
-# TODO(odyssey4me):
-# We can remove this in R because we only need this to
-# handle upgrades from O->P in order to remove the
-# package when switching to the new configuration.
 keystone_mod_wsgi_distro_packages:
-  - libapache2-mod-wsgi
+  - apache2-mod_wsgi
+
+keystone_mod_proxy_uwsgi_distro_packages:
+  - apache2-mod_uwsgi
 
 keystone_nginx_distro_packages:
-  - nginx-full
+  - nginx
 
 keystone_idp_distro_packages:
-  - ssl-cert
   - xmlsec1
 
 keystone_sp_distro_packages:
-  - libapache2-mod-shib2
+  - shibboleth-sp
 
 keystone_developer_mode_distro_packages:
-  - build-essential
+  - patterns-openSUSE-devel_basis
 
 keystone_apache_default_sites:
-  - "/etc/apache2/sites-enabled/000-default.conf"
+  - "/etc/apache2/conf.d/gitweb.conf"
 
-keystone_apache_site_available: "/etc/apache2/sites-available/keystone-httpd.conf"
-keystone_apache_site_enabled: "/etc/apache2/sites-enabled/keystone-httpd.conf"
-keystone_apache_conf: "/etc/apache2/apache2.conf"
+keystone_apache_conf: "/etc/apache2/httpd.conf"
 keystone_apache_default_log_folder: "/var/log/apache2"
 keystone_apache_default_log_owner: "root"
-keystone_apache_default_log_grp: "adm"
-keystone_apache_security_conf: "/etc/apache2/conf-available/security.conf"
+keystone_apache_default_log_grp: "root"
+keystone_apache_security_conf: "{{ keystone_apache_conf }}"
 
 keystone_apache_configs:
-  - { src: "keystone-ports.conf.j2", dest: "/etc/apache2/ports.conf" }
-  - { src: "keystone-httpd.conf.j2", dest: "/etc/apache2/sites-available/keystone-httpd.conf" }
-  - { src: "keystone-httpd-mpm.conf.j2", dest: "/etc/apache2/mods-available/mpm_{{ keystone_httpd_mpm_backend }}.conf" }
+  - { src: "keystone-ports.conf.j2", dest: "/etc/apache2/conf.d/ports.conf" }
+  - { src: "keystone-httpd.conf.j2", dest: "/etc/apache2/conf.d/keystone-httpd.conf" }
+  - { src: "keystone-httpd-mpm.conf.j2", dest: "/etc/apache2/mod_{{ keystone_httpd_mpm_backend }}.conf" }
 
 keystone_apache_modules:
+  - name: "authz_host"
+    state: "present"
+  - name: "access_compat"
+    state: "present"
+  - name: "version"
+    state: "present"
   - name: "ssl"
     state: "{{ (keystone_ssl | bool) | ternary('present', 'absent') }}"
   - name: "shib2"
     state: "{{ ( keystone_sp != {} ) | ternary('present', 'absent') }}"
+  - name: "proxy"
+    state: "present"
   - name: "proxy_http"
     state: "present"
+  - name: "proxy_fcgi"
+    state: "present"
+  - name: "proxy_wstunnel"
+    state: "present"
+  - name: "proxy_uwsgi"
+    state: "present"
 
-keystone_nginx_conf_path: "sites-available"
+keystone_nginx_conf_path: 'conf.d'
 
 keystone_system_service_name: apache2
