@@ -7,13 +7,13 @@ After=network.target
 
 [Service]
 Type=simple
-User={{ system_user }}
-Group={{ system_group }}
+User={{ keystone_system_user_name }}
+Group={{ keystone_system_group_name }}
 
 {% if program_override is defined %}
-ExecStart={{ program_override }} --ini /etc/uwsgi/{{ program_name }}.ini --logto /var/log/keystone/{{ program_name }}.log {{ program_config_options|default('') }}
+ExecStart={{ program_override }} --ini /etc/uwsgi/{{ item }}.ini --logto /var/log/keystone/{{ item }}.log {{ program_config_options|default('') }}
 {% else %}
-ExecStart={{ keystone_bin }}/uwsgi --ini /etc/uwsgi/{{ program_name }}.ini --logto /var/log/keystone/{{ program_name }}.log {{ program_config_options|default('') }}
+ExecStart={{ keystone_bin }}/uwsgi --ini /etc/uwsgi/{{ item }}.ini --logto /var/log/keystone/{{ item }}.log {{ program_config_options|default('') }}
 {% endif %}
 
 # Give a reasonable amount of time for the server to start up/shut down
