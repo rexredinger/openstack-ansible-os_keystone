@@ -13,16 +13,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Create Keystone TEMP dirs
+- name: Create TEMP run dir
   file:
-    path: "{{ item.path }}/{{ program_name }}"
+    path: "/var/run/{{ item }}"
     state: directory
-    owner: "{{ system_user }}"
-    group: "{{ system_group }}"
+    owner: "{{ keystone_system_user_name }}"
+    group: "{{ keystone_system_group_name }}"
     mode: "02755"
-  with_items:
-    - { path: "/var/run" }
-    - { path: "/var/lock" }
+  with_items: "{{ keystone_wsgi_program_names }}"
+
+- name: Create TEMP lock dir
+  file:
+    path: "/var/lock/{{ item }}"
+    state: directory
+    owner: "{{ keystone_system_user_name }}"
+    group: "{{ keystone_system_group_name }}"
+    mode: "02755"
+  with_items: "{{ keystone_wsgi_program_names }}"
 
 - name: Create tempfile.d entry
   template:
@@ -38,12 +45,13 @@
 - name: Place the systemd init script
   config_template:
     src: "keystone-uwsgi_systemd-init.j2"
-    dest: "/etc/systemd/system/{{ program_name }}.service"
+    dest: "/etc/systemd/system/{{ item }}.service"
     mode: "0644"
     owner: "root"
     group: "root"
     config_overrides: "{{ keystone_uwsgi_init_overrides }}"
     config_type: "ini"
+  with_items: "{{ keystone_wsgi_program_names }}"
   notify:
     - Restart uWSGI
     - Restart web server
