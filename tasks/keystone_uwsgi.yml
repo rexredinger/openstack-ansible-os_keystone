@@ -29,17 +29,3 @@
   notify: Restart Keystone APIs
 
 - include: "keystone_init_{{ ansible_service_mgr }}.yml"
-  vars:
-    program_name: "{{ keystone_wsgi_public_program_name }}"
-    service_name: "{{ keystone_wsgi_public_program_name }}"
-    system_user: "{{ keystone_system_user_name }}"
-    system_group: "{{ keystone_system_group_name }}"
-    service_home: "{{ keystone_system_user_home }}"
-
-- include: "keystone_init_{{ ansible_service_mgr }}.yml"
-  vars:
-    program_name: "{{ keystone_wsgi_admin_program_name }}"
-    service_name: "{{ keystone_wsgi_admin_program_name }}"
-    system_user: "{{ keystone_system_user_name }}"
-    system_group: "{{ keystone_system_group_name }}"
-    service_home: "{{ keystone_system_user_home }}"

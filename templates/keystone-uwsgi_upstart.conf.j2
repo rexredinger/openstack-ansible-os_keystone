@@ -2,7 +2,7 @@
 
 # vim:set ft=upstart ts=2 et:
 
-description "{{ program_name }} under uWSGI"
+description "{{ item }} under uWSGI"
 author "Kevin Carter <kevin.carter@rackspace.com>"
 
 start on runlevel [2345]
@@ -17,15 +17,15 @@ kill timeout 120
 env RUNBIN="{{ keystone_bin }}/uwsgi"
 
 # Change directory to service users home
-chdir "{{ service_home }}"
+chdir "{{ keystone_system_user_home }}"
 
 # Pre start actions
 pre-start script
-  mkdir -p "/var/run/{{ program_name }}"
-  chown {{ system_user }}:{{ system_group }} "/var/run/{{ program_name }}"
+  mkdir -p "/var/run/{{ item }}"
+  chown {{ keystone_system_user_name }}:{{ keystone_system_group_name }} "/var/run/{{ item }}"
 
-  mkdir -p "/var/lock/{{ program_name }}"
-  chown {{ system_user }}:{{ system_group }} "/var/lock/{{ program_name }}"
+  mkdir -p "/var/lock/{{ item }}"
+  chown {{ keystone_system_user_name }}:{{ keystone_system_group_name }} "/var/lock/{{ item }}"
 
   . {{ keystone_bin }}/activate
 
@@ -34,15 +34,15 @@ end script
 # Post stop actions
 # Sleep configured number of seconds between restarts
 post-stop script
-  rm "/var/run/{{ program_name }}/{{ program_name }}.pid"
+  rm "/var/run/{{ item }}/{{ item }}.pid"
   sleep 2
 end script
 
 # Run the start up job
 exec start-stop-daemon --start \
                        --make-pidfile \
-                       --pidfile /var/run/{{ program_name }}/{{ program_name }}.pid \
-                       --exec "{{ program_override|default('$RUNBIN') }}" \
-                       -- --ini "/etc/uwsgi/{{ program_name }}.ini" \
-                       --logto /var/log/keystone/{{ program_name }}.log \
-                       -- {{ program_config_options|default('') }}
+                       --pidfile /var/run/{{ item }}/{{ item }}.pid \
+                       --exec "{{ program_override | default('$RUNBIN') }}" \
+                       -- --ini "/etc/uwsgi/{{ item }}.ini" \
+                       --logto /var/log/keystone/{{ item }}.log \
+                       -- {{ program_config_options | default('') }}

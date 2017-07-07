@@ -1,4 +1,6 @@
 # {{ ansible_managed }}
 
-D /var/lock/{{ program_name }} 2755 {{ system_user }} {{ system_group }}
-D /var/run/{{ program_name }} 2755 {{ system_user }} {{ system_group }}
+{% for program_name in keystone_wsgi_program_names %}
+D /var/lock/{{ program_name }} 2755 {{ keystone_system_user_name }} {{ keystone_system_group_name }}
+D /var/run/{{ program_name }} 2755 {{ keystone_system_user_name }} {{ keystone_system_group_name }}
+{% endfor %}
