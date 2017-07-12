@@ -43,22 +43,28 @@
   tags:
     - keystone-config
 
+# When keystone is initially built, the service does not yet exist on the
+# host this task is executed on. We therefore use failed_when for the task
+# to catch a failure that's outside the norm.
 - name: Ensure keystone service is stopped
   service:
     name: "{{ item }}"
     state: stopped
-  register: keystone_stop
-  failed_when:
-    - "keystone_stop.msg is defined"
-    - "'no service or tool' not in keystone_stop.msg"
-    - "'systemd could not find' not in keystone_stop.msg"
-    - "'Could not find the requested service' not in keystone_stop.msg"
-  with_items:
-    - "{{ keystone_wsgi_program_names }}"
-    - "{{ keystone_system_service_name }}"
+  register: _stop
+  until: _stop | success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_wsgi_program_names }}"
   when:
     - "(ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool) or
        (ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool)"
+  failed_when:
+    - "_stop.msg is defined"
+    - "'no service or tool' not in _stop.msg"
+    - "'systemd could not find' not in _stop.msg"
+    - "'Could not find the requested service' not in _stop.msg"
+  notify:
+    - Restart uWSGI
 
 - name: Perform a Keystone DB sync expand
   command: "{{ keystone_bin }}/keystone-manage db_sync --expand"
