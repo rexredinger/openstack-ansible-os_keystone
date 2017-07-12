@@ -13,52 +13,52 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Check current state of Keystone DB
-  command: "{{ keystone_bin }}/keystone-manage db_sync --check"
-  become: yes
-  become_user: "{{ keystone_system_user_name }}"
-  register: keystone_db_sync_check
-  failed_when: "keystone_db_sync_check.rc == 1"
-  changed_when: "keystone_db_sync_check.rc not in [2, 3, 4]"
-  run_once: yes
+# When keystone is initially built, the service does not yet exist on the
+# host this task is executed on. We therefore use failed_when for the task
+# to catch a failure that's outside the norm.
+- name: Stop web server
+  service:
+    name: "{{ (keystone_apache_enabled | bool) | ternary(keystone_system_service_name, 'nginx') }}"
+    state: stopped
+  register: _stop
+  until: _stop | success
+  retries: 5
+  delay: 2
+  when:
+    - "keystone_mod_wsgi_enabled | bool"
+    - "(ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool) or
+       (ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool)"
+  failed_when:
+    - "_stop.msg is defined"
+    - "'no service or tool' not in _stop.msg"
+    - "'systemd could not find' not in _stop.msg"
+    - "'Could not find the requested service' not in _stop.msg"
+  notify:
+    - Restart web server
 
-- name: Set the db sync local facts
-  ini_file:
-    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
-    section: keystone
-    option: "{{ item.name }}"
-    value: "{{ item.state }}"
-  with_items:
-    - name: "need_db_expand"
-      state: "{{ (keystone_db_sync_check.rc | int == 2) | bool }}"
-    - name: "need_db_migrate"
-      state: "{{ (keystone_db_sync_check.rc | int in [2, 3] ) | bool }}"
-    - name: "need_db_contract"
-      state: "{{ (keystone_db_sync_check.rc | int in [2, 3, 4]) | bool }}"
-
-- name: Refresh local facts
-  setup:
-    filter: ansible_local
-    gather_subset: "!all"
-  tags:
-    - keystone-config
-
-- name: Ensure keystone service is stopped
+# When keystone is initially built, the service does not yet exist on the
+# host this task is executed on. We therefore use failed_when for the task
+# to catch a failure that's outside the norm.
+- name: Stop uWSGI
   service:
     name: "{{ item }}"
     state: stopped
-  register: keystone_stop
-  failed_when:
-    - "keystone_stop.msg is defined"
-    - "'no service or tool' not in keystone_stop.msg"
-    - "'systemd could not find' not in keystone_stop.msg"
-    - "'Could not find the requested service' not in keystone_stop.msg"
-  with_items:
-    - "{{ keystone_wsgi_program_names }}"
-    - "{{ keystone_system_service_name }}"
+  register: _stop
+  until: _stop | success
+  retries: 5
+  delay: 2
+  with_items: "{{ keystone_wsgi_program_names }}"
   when:
+    - "not keystone_mod_wsgi_enabled | bool"
     - "(ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool) or
        (ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool)"
+  failed_when:
+    - "_stop.msg is defined"
+    - "'no service or tool' not in _stop.msg"
+    - "'systemd could not find' not in _stop.msg"
+    - "'Could not find the requested service' not in _stop.msg"
+  notify:
+    - Restart uWSGI
 
 - name: Perform a Keystone DB sync expand
   command: "{{ keystone_bin }}/keystone-manage db_sync --expand"
@@ -67,6 +67,15 @@
   when:
     - "ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool"
   run_once: yes
+  register: _keystone_db_expand
+
+- name: Disable the requirement for db expand
+  ini_file:
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: keystone
+    option: "need_db_expand"
+    value: "False"
+  when: _keystone_db_expand | succeeded
 
 - name: Perform a Keystone DB sync migrate
   command: "{{ keystone_bin }}/keystone-manage db_sync --migrate"
@@ -75,6 +84,15 @@
   when:
     - "ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool"
   run_once: yes
+  register: _keystone_db_migrate
+
+- name: Disable the requirement for db migrate
+  ini_file:
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: keystone
+    option: "need_db_migrate"
+    value: "False"
+  when: _keystone_db_migrate | succeeded
 
 - name: Perform a Keystone DB sync contract
   command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
@@ -84,3 +102,12 @@
     - "(keystone_all_software_updated | default('no')) | bool"
     - "ansible_local['openstack_ansible']['keystone']['need_db_contract'] | bool"
   run_once: yes
+  register: _keystone_db_contract
+
+- name: Disable the requirement for db contract
+  ini_file:
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: keystone
+    option: "need_db_contract"
+    value: "False"
+  when: _keystone_db_contract | succeeded
