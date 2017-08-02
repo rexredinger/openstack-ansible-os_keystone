@@ -25,7 +25,8 @@
     - { path: "/etc/pki/tls/private", owner: "root", group: "root" }
     - { path: "/var/lock/keystone", mode: "2755" }
     - { path: "/var/log/httpd", mode: "2755" }
-  when: ansible_pkg_mgr == 'yum'
+  when:
+    - ansible_pkg_mgr in ['yum', 'dnf']
 
 - name: Create system links
   file:
@@ -36,7 +37,8 @@
     - { src: "/etc/pki/tls/certs", dest: "/etc/ssl/certs" }
     - { src: "/etc/pki/tls/private", dest: "/etc/ssl/private" }
     - { src: "/var/log/httpd", dest: "/var/log/apache2" }
-  when: ansible_pkg_mgr == 'yum'
+  when:
+    - ansible_pkg_mgr in ['yum', 'dnf']
 
 - name: Add shibboleth repo
   yum_repository:
@@ -46,7 +48,7 @@
     gpgkey: "http://download.opensuse.org/repositories/security:/shibboleth/CentOS_7//repodata/repomd.xml.key"
     gpgcheck: yes
   when:
-    - ansible_pkg_mgr == 'yum'
+    - ansible_pkg_mgr in ['yum', 'dnf']
     - keystone_sp != {}
 
 # If the web server being removed was never installed, this task will fail when trying
@@ -162,7 +164,7 @@
     path:  "{{ keystone_bin | dirname }}/bin/python2.7"
     state: "absent"
   when:
-    - ansible_pkg_mgr == 'yum'
+    - ansible_pkg_mgr in ['yum', 'dnf']
     - keystone_get_venv | changed
 
 - name: Update virtualenv path

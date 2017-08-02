@@ -52,7 +52,7 @@
     line: 'LoadModule proxy_uwsgi_module modules/mod_proxy_uwsgi.so'
     state: "present"
   when:
-   - ansible_pkg_mgr == 'yum'
+   - ansible_pkg_mgr in ['yum', 'dnf']
   notify:
     - Restart web server
 
