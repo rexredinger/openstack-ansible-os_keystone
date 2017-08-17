@@ -30,5 +30,8 @@ server {
         include     uwsgi_params;
         uwsgi_pass  127.0.0.1:{{ keystone_uwsgi_ports[item]['socket'] }};
         uwsgi_param SCRIPT_NAME '';
+{% for header in keystone_extra_headers %}
+        add_header "{{ header['parameter'] }}" "{{ header['value'] }}";
+{% endfor %}
     }
 }
