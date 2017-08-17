@@ -488,3 +488,17 @@ keystone_required_secrets:
   - keystone_service_password
 
 keystone_uwsgi_init_overrides: {}
+
+## Extra HTTP headers for Keystone
+# Add any additional headers here that Keystone should return.
+#
+# Example:
+#
+#   keystone_extra_headers:
+#     - parameter: "Access-Control-Expose-Headers"
+#       value: "X-Subject-Token"
+#     - parameter: "Access-Control-Allow-Headers"
+#       value: "Content-Type, X-Auth-Token"
+#     - parameter: "Access-Control-Allow-Origin"
+#       value: "*"
+keystone_extra_headers: []
