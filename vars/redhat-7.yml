@@ -52,7 +52,7 @@ keystone_sp_distro_packages:
   - shibboleth
 
 keystone_developer_mode_distro_packages:
-  - '@Development Tools'
+  - gcc
 
 keystone_apache_default_sites:
   - "/etc/httpd/conf.d/userdir.conf"
