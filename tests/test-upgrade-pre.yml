@@ -31,5 +31,8 @@
 # Install RabbitMQ/MariaDB
 - include: common/test-install-infra.yml
 
+# Ensure the repo is setup for previous version
+- include: common/previous/test-repo-setup.yml
+
 # Install previous Keystone
 - include: test-install-previous-keystone.yml
