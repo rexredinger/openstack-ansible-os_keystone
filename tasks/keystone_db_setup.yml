@@ -75,7 +75,9 @@
     section: keystone
     option: "need_db_expand"
     value: "False"
-  when: _keystone_db_expand | succeeded
+  when:
+    - not _keystone_db_expand | skipped
+    - _keystone_db_expand | succeeded
 
 - name: Perform a Keystone DB sync migrate
   command: "{{ keystone_bin }}/keystone-manage db_sync --migrate"
@@ -92,7 +94,9 @@
     section: keystone
     option: "need_db_migrate"
     value: "False"
-  when: _keystone_db_migrate | succeeded
+  when:
+    - not _keystone_db_migrate | skipped
+    - _keystone_db_migrate | succeeded
 
 - name: Perform a Keystone DB sync contract
   command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
@@ -110,4 +114,6 @@
     section: keystone
     option: "need_db_contract"
     value: "False"
-  when: _keystone_db_contract | succeeded
+  when:
+    - not _keystone_db_contract | skipped
+    - _keystone_db_contract | succeeded
