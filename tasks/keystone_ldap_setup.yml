@@ -35,6 +35,7 @@
     mode: "0640"
   with_dict: "{{ keystone_ldap }}"
   notify:
+    - Manage LB
     - Restart uWSGI
     - Restart web server
 
@@ -47,5 +48,6 @@
     state: absent
   when: keystone_ldap.Default is not defined
   notify:
+    - Manage LB
     - Restart uWSGI
     - Restart web server

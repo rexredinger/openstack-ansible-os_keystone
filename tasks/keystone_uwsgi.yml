@@ -27,6 +27,7 @@
     config_type: ini
   with_items: "{{ keystone_wsgi_program_names }}"
   notify:
+    - Manage LB
     - Restart uWSGI
 
 - include: "keystone_init_{{ ansible_service_mgr }}.yml"

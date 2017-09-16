@@ -39,6 +39,7 @@
     owner: "root"
     group: "root"
   notify:
+    - Manage LB
     - Restart uWSGI
     - Restart web server
 
@@ -53,5 +54,6 @@
     config_type: "ini"
   with_items: "{{ keystone_wsgi_program_names }}"
   notify:
+    - Manage LB
     - Restart uWSGI
     - Restart web server

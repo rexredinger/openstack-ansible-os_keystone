@@ -78,6 +78,7 @@
   retries: 5
   delay: 2
   notify:
+    - Manage LB
     - Restart web server
 
 - name: Create developer mode constraint file
@@ -137,6 +138,7 @@
     copy: "no"
   when: keystone_get_venv | changed
   notify:
+    - Manage LB
     - Restart uWSGI
     - Restart web server
 
@@ -156,6 +158,7 @@
   delay: 2
   when: keystone_get_venv | failed or keystone_get_venv | skipped
   notify:
+    - Manage LB
     - Restart uWSGI
     - Restart web server
 
@@ -184,6 +187,7 @@
     - src: "{{ keystone_bin }}/keystone-wsgi-public"
       dest: main
   notify:
+    - Manage LB
     - Restart web server
 
 - name: Initialise the upgrade facts
