@@ -24,6 +24,7 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
   notify:
+    - Manage LB
     - Restart web server
 
 - name: Configure custom nginx log format
@@ -34,6 +35,7 @@
     dest: "/etc/nginx/nginx.conf"
     line: "log_format custom '{{ keystone_nginx_access_log_format_combined }} {{ keystone_nginx_access_log_format_extras }}';"
   notify:
+    - Manage LB
     - Restart web server
 
 - name: Ensure configuration directory exists
@@ -48,6 +50,7 @@
     dest: "/etc/nginx/{{ keystone_nginx_conf_path }}/{{ item }}.conf"
   with_items: "{{ keystone_wsgi_program_names }}"
   notify:
+    - Manage LB
     - Restart web server
 
 - name: Link to enable virtual hosts
@@ -58,4 +61,5 @@
   with_items: "{{ keystone_wsgi_program_names }}"
   when: ansible_os_family == "Debian"
   notify:
+    - Manage LB
     - Restart web server

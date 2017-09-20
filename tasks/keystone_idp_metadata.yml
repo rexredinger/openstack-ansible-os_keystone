@@ -20,4 +20,5 @@
   become_user: "{{ keystone_system_user_name }}"
   when: keystone_idp != {}
   notify:
+    - Manage LB
     - Restart uWSGI

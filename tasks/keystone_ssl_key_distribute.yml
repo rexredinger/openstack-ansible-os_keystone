@@ -21,6 +21,7 @@
     group: "{{ keystone_system_group_name }}"
     mode: "0640"
   notify:
+    - Manage LB
     - Restart web server
 
 - name: Distribute self signed ssl cert
@@ -31,6 +32,7 @@
     group: "{{ keystone_system_group_name }}"
     mode: "0640"
   notify:
+    - Manage LB
     - Restart web server
 
 - name: Ensure keystone user owns the self-signed key and certificate
@@ -42,4 +44,5 @@
     - "{{ keystone_ssl_key }}"
     - "{{ keystone_ssl_cert }}"
   notify:
+    - Manage LB
     - Restart web server

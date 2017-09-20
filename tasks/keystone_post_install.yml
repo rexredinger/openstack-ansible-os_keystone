@@ -54,6 +54,7 @@
       config_type: "json"
       content: "{{ keystone_policy_user_content | default('{}', true) }}"
   notify:
+    - Manage LB
     - Restart uWSGI
     - Restart web server
 
@@ -67,6 +68,7 @@
   when:
     - keystone_idp != {}
   notify:
+    - Manage LB
     - Restart uWSGI
     - Restart web server
 
@@ -77,5 +79,6 @@
   when:
     - keystone_idp == {}
   notify:
+    - Manage LB
     - Restart uWSGI
     - Restart web server

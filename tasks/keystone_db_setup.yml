@@ -64,6 +64,7 @@
     - "'systemd could not find' not in _stop.msg"
     - "'Could not find the requested service' not in _stop.msg"
   notify:
+    - Manage LB
     - Restart uWSGI
 
 - name: Perform a Keystone DB sync expand
