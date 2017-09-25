@@ -77,6 +77,8 @@ keystone_apache_modules:
     state: "{{ ( keystone_sp != {} ) | ternary('present', 'absent') }}"
   - name: "proxy_http"
     state: "present"
+  - name: "headers"
+    state: "present"
 
 keystone_nginx_conf_path: "sites-available"
 

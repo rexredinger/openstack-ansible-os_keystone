@@ -12,6 +12,11 @@ Listen {{ keystone_service_port }}
     CustomLog /var/log/keystone/ssl_access.log {{ keystone_apache_custom_log_format }}
     Options +FollowSymLinks
 
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+    Header set Content-Security-Policy "default-src 'self' https: wss:;"
+    Header set X-Frame-Options "{{ keystone_x_frame_options | default ('DENY') }}"
+
     {% if keystone_ssl | bool and keystone_service_internaluri_proto == "https" -%}
     SSLEngine on
     SSLCertificateFile    {{ keystone_ssl_cert }}
@@ -74,6 +79,7 @@ Listen {{ keystone_admin_port }}
     ErrorLog  /var/log/keystone/keystone-apache-error.log
     CustomLog /var/log/keystone/ssl_access.log {{ keystone_apache_custom_log_format }}
     Options +FollowSymLinks
+
 
     {% if keystone_ssl | bool and keystone_service_adminuri_proto == "https" -%}
     SSLEngine on
