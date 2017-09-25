@@ -87,6 +87,8 @@ keystone_apache_modules:
     state: "present"
   - name: "proxy_uwsgi"
     state: "present"
+  - name: "headers"
+    state: "present"
 
 keystone_nginx_conf_path: 'conf.d'
 

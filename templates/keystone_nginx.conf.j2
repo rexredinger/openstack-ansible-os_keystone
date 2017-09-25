@@ -22,6 +22,11 @@ server {
     access_log  /var/log/nginx/{{ item }}-access.log custom;
     error_log   /var/log/nginx/{{ item }}-error.log info;
 
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header Content-Security-Policy "default-src 'self' https: wss:;";
+    add_header X-Frame-Options {{ keystone_x_frame_options | default ('DENY') }};
+
     location / {
         try_files   $uri @yourapplication;
     }
