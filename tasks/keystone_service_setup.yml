@@ -15,15 +15,12 @@
 
 - name: Wait for services to be up
   uri:
-    url: "{{ item['url'] }}"
-    validate_certs: "{{ item['validate_certs'] }}"
+    url: "{{ item }}"
     method: "HEAD"
     status_code: 300
   with_items:
-    - url: "{{ keystone_service_adminuri_proto }}://{{ ansible_host }}:{{ keystone_admin_port }}"
-      validate_certs: "{{ not keystone_service_adminuri_insecure | bool }}"
-    - url: "{{ keystone_service_internaluri_proto }}://{{ ansible_host }}:{{ keystone_service_port }}"
-      validate_certs: "{{ not keystone_service_internaluri_insecure | bool }}"
+    - "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}"
+    - "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-public']['http'] }}"
   register: _wait_check
   until: _wait_check | success
   retries: 12
@@ -56,11 +53,10 @@
     login_user: "{{ keystone_admin_user_name }}"
     login_password: "{{ keystone_auth_admin_password }}"
     login_project_name: "{{ keystone_admin_tenant_name }}"
-    endpoint: "{{ keystone_service_adminuri_proto }}://{{ ansible_host }}:{{ keystone_admin_port }}/v3"
+    endpoint: "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}/v3"
     ignore_catalog: True
     tenant_name: "{{ keystone_service_tenant_name }}"
     description: "{{ keystone_service_description }}"
-    insecure: "{{ keystone_service_adminuri_insecure }}"
   register: add_service
   until: add_service|success
   retries: 5
@@ -73,10 +69,9 @@
     login_user: "{{ keystone_admin_user_name }}"
     login_password: "{{ keystone_auth_admin_password }}"
     login_project_name: "{{ keystone_admin_tenant_name }}"
-    endpoint: "{{ keystone_service_adminuri_proto }}://{{ ansible_host }}:{{ keystone_admin_port }}/v3"
+    endpoint: "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}/v3"
     ignore_catalog: True
     role_name: "{{ keystone_default_role_name }}"
-    insecure: "{{ keystone_service_adminuri_insecure }}"
   register: add_member_role
   when: not keystone_service_in_ldap | bool
   until: add_member_role|success
@@ -90,12 +85,11 @@
     login_user: "{{ keystone_admin_user_name }}"
     login_password: "{{ keystone_auth_admin_password }}"
     login_project_name: "{{ keystone_admin_tenant_name }}"
-    endpoint: "{{ keystone_service_adminuri_proto }}://{{ ansible_host }}:{{ keystone_admin_port }}/v3"
+    endpoint: "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}/v3"
     ignore_catalog: True
     service_name: "{{ keystone_service_name }}"
     service_type: "{{ keystone_service_type }}"
     description: "{{ keystone_service_description }}"
-    insecure: "{{ keystone_service_adminuri_insecure }}"
   register: add_service
   until: add_service|success
   retries: 5
@@ -108,12 +102,11 @@
     login_user: "{{ keystone_admin_user_name }}"
     login_password: "{{ keystone_auth_admin_password }}"
     login_project_name: "{{ keystone_admin_tenant_name }}"
-    endpoint: "{{ keystone_service_adminuri_proto }}://{{ ansible_host }}:{{ keystone_admin_port }}/v3"
+    endpoint: "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}/v3"
     ignore_catalog: True
     user_name: "{{ keystone_service_user_name }}"
     tenant_name: "{{ keystone_service_tenant_name }}"
     password: "{{ keystone_service_password }}"
-    insecure: "{{ keystone_service_adminuri_insecure }}"
   register: add_service
   until: add_service|success
   retries: 5
@@ -126,12 +119,11 @@
     login_user: "{{ keystone_admin_user_name }}"
     login_password: "{{ keystone_auth_admin_password }}"
     login_project_name: "{{ keystone_admin_tenant_name }}"
-    endpoint: "{{ keystone_service_adminuri_proto }}://{{ ansible_host }}:{{ keystone_admin_port }}/v3"
+    endpoint: "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}/v3"
     ignore_catalog: True
     user_name: "{{ keystone_service_user_name }}"
     tenant_name: "{{ keystone_service_tenant_name }}"
     role_name: "{{ keystone_role_name }}"
-    insecure: "{{ keystone_service_adminuri_insecure }}"
   register: add_service
   until: add_service|success
   retries: 5
@@ -144,12 +136,11 @@
     login_user: "{{ keystone_admin_user_name }}"
     login_password: "{{ keystone_auth_admin_password }}"
     login_project_name: "{{ keystone_admin_tenant_name }}"
-    endpoint: "{{ keystone_service_adminuri_proto }}://{{ ansible_host }}:{{ keystone_admin_port }}/v3"
+    endpoint: "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}/v3"
     ignore_catalog: True
     region_name: "{{ keystone_service_region }}"
     service_name: "{{ keystone_service_name }}"
     service_type: "{{ keystone_service_type }}"
-    insecure: "{{ keystone_service_adminuri_insecure }}"
     endpoint_list:
       - url: "{{ keystone_service_publicuri }}"
         interface: "public"
