@@ -156,10 +156,6 @@ keystone_service_publicuri: "{{ keystone_service_publicuri_proto }}://{{ externa
 keystone_service_internaluri: "{{ keystone_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ keystone_service_port }}"
 keystone_service_adminuri: "{{ keystone_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ keystone_admin_port }}"
 
-keystone_service_publicurl_v2: "{{ keystone_service_publicuri }}/v2.0"
-keystone_service_internalurl_v2: "{{ keystone_service_internaluri }}/v2.0"
-keystone_service_adminurl_v2: "{{ keystone_service_adminuri }}/v2.0"
-
 keystone_service_publicurl_v3: "{{ keystone_service_publicuri }}/v3"
 keystone_service_internalurl_v3: "{{ keystone_service_internaluri }}/v3"
 keystone_service_adminurl_v3: "{{ keystone_service_adminuri }}/v3"
