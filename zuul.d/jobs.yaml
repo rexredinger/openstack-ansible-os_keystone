@@ -29,20 +29,3 @@
     parent: openstack-ansible-uw_apache
     voting: false
     nodeset: centos-7
-
-- job:
-    name: openstack-ansible-uw_nginx
-    parent: openstack-ansible-functional
-    vars:
-      tox_env: uw_apache
-
-- job:
-    name: openstack-ansible-uw_nginx-ubuntu-xenial
-    parent: openstack-ansible-uw_nginx
-    nodeset: ubuntu-xenial
-
-- job:
-    name: openstack-ansible-uw_nginx-centos-7-nv
-    parent: openstack-ansible-uw_nginx
-    voting: false
-    nodeset: centos-7
