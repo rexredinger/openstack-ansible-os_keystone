@@ -425,26 +425,14 @@ keystone_requires_pip_packages:
   - virtualenv
   - virtualenv-tools
   - python-keystoneclient # Keystoneclient needed to OSA keystone lib
-  - httplib2
 
 # Common pip packages
 keystone_pip_packages:
-  - argparse
-  - cryptography
   - keystone
-  - keystonemiddleware
   - ldappool
-  - lxml
-  - oslo.log
-  - oslo.middleware
-  - pbr
   - PyMySQL
-  - pysaml2
-  - python-keystoneclient
-  - python-ldap
   - python-memcached
   - python-openstackclient
-  - repoze.lru
   - uWSGI
 
 # This variable is used by the repo_build process to determine
