@@ -57,8 +57,6 @@ keystone_system_user_home: "/var/lib/{{ keystone_system_user_name }}"
 ## Drivers
 keystone_auth_methods: "password,token"
 keystone_identity_driver: sql
-# For a sql backed token storage use: "sql"
-keystone_token_driver: memcache
 keystone_token_provider: fernet
 keystone_token_expiration: 43200
 keystone_token_cache_time: 3600
