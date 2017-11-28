@@ -92,7 +92,7 @@
 - include: keystone_token_cleanup.yml
   static: no
   when:
-    - "'sql' in keystone_token_driver"
+    - "'uuid' in keystone_token_provider"
   run_once: yes
   tags:
     - keystone-install
