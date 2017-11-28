@@ -48,13 +48,6 @@
   tags:
     - keystone-config
 
-- include: keystone_cleanup_old_facts.yml
-  when:
-    - "('keystone' in ansible_local) or
-       ('need_db_sync' in ansible_local['openstack_ansible']['keystone'])"
-  tags:
-    - keystone-config
-
 - include: keystone_post_install.yml
   tags:
     - keystone-config
