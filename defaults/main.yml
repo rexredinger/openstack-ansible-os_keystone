@@ -421,14 +421,14 @@ keystone_pip_packages:
   - keystonemiddleware
   - ldappool
   - lxml
-  - PyMySQL
   - oslo.log
   - oslo.middleware
   - pbr
   - pycrypto
+  - pyldap
+  - PyMySQL
   - pysaml2
   - python-keystoneclient
-  - python-ldap
   - python-memcached
   - python-openstackclient
   - repoze.lru
