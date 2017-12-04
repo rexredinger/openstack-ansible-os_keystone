@@ -45,7 +45,3 @@ dependencies:
   - role: galera_client
     when:
       - keystone_database_enabled | bool
-  - role: memcached_server
-    when:
-      - "'memcache' in keystone_token_driver"
-      - "'fernet' not in keystone_token_provider"
