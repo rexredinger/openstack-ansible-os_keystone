@@ -428,6 +428,7 @@ keystone_requires_pip_packages:
 keystone_pip_packages:
   - keystone
   - ldappool
+  - pyldap
   - PyMySQL
   - python-memcached
   - python-openstackclient
