@@ -440,10 +440,10 @@ keystone_pip_packages:
   - oslo.log
   - oslo.middleware
   - pbr
+  - pyldap
   - PyMySQL
   - pysaml2
   - python-keystoneclient
-  - python-ldap
   - python-memcached
   - python-openstackclient
   - repoze.lru
