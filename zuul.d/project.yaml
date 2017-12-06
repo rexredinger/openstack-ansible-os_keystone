@@ -24,6 +24,9 @@
         - openstack-ansible-upgrade-ubuntu-xenial
         - openstack-ansible-uw_apache-centos-7-nv
         - openstack-ansible-uw_apache-ubuntu-xenial
+    experimental:
+      jobs:
+        - openstack-ansible-integrated-deploy-aio
     gate:
       jobs:
         - openstack-ansible-linters
