@@ -171,9 +171,12 @@
     - keystone_get_venv | changed
 
 - name: Update virtualenv path
-  command: >
-    virtualenv-tools --update-path=auto --reinitialize {{ keystone_bin | dirname }}
+  shell: |
+    find {{ keystone_bin }} -name \*.pyc -delete
+    sed -si '1s/^.*python.*$/#!{{ keystone_bin | replace ('/','\/') }}\/python/' {{ keystone_bin }}/*
   when: keystone_get_venv | changed
+  tags:
+    - skip_ansible_lint
 
 - name: Create WSGI symlinks
   file:

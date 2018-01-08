@@ -425,7 +425,6 @@ keystone_ceilometer_enabled: false
 # Keystone packages that must be installed before anything else
 keystone_requires_pip_packages:
   - virtualenv
-  - virtualenv-tools
   - python-keystoneclient # Keystoneclient needed to OSA keystone lib
 
 # Common pip packages
