@@ -36,7 +36,7 @@ set -e
 export WORKING_DIR=${WORKING_DIR:-$(pwd)}
 export ROLE_NAME=${ROLE_NAME:-''}
 
-export ANSIBLE_PARAMETERS=${ANSIBLE_PARAMETERS:-"-vvv"}
+export ANSIBLE_PARAMETERS=${ANSIBLE_PARAMETERS:-"-vv"}
 export TEST_PLAYBOOK=${TEST_PLAYBOOK:-$WORKING_DIR/tests/test-upgrade-pre.yml}
 export TEST_CHECK_MODE=${TEST_CHECK_MODE:-false}
 export TEST_IDEMPOTENCE=${TEST_IDEMPOTENCE:-false}
@@ -53,7 +53,8 @@ echo "TEST_IDEMPOTENCE: ${TEST_IDEMPOTENCE}"
 function execute_ansible_playbook {
 
   export ANSIBLE_CLI_PARAMETERS="${ANSIBLE_PARAMETERS} -e @${ANSIBLE_OVERRIDES}"
-  CMD_TO_EXECUTE="ansible-playbook ${TEST_PLAYBOOK} $@ ${ANSIBLE_CLI_PARAMETERS}"
+  export ANSIBLE_BIN=${ANSIBLE_BIN:-"ansible-playbook"}
+  CMD_TO_EXECUTE="${ANSIBLE_BIN} ${TEST_PLAYBOOK} $@ ${ANSIBLE_CLI_PARAMETERS}"
 
   echo "Executing: ${CMD_TO_EXECUTE}"
   echo "With:"
@@ -69,13 +70,28 @@ function execute_ansible_playbook {
 # Ensure that the Ansible environment is properly prepared
 source "${COMMON_TESTS_PATH}/test-ansible-env-prep.sh"
 
-# Prepare environment for the initial deploy of previous Keystone
+# Prepare environment for the initial deploy of (previous and current) Keystone
 # No upgrading or testing is done yet.
 export TEST_PLAYBOOK="${WORKING_DIR}/tests/test-upgrade-pre.yml"
-export ANSIBLE_LOG_PATH="${ANSIBLE_LOG_DIR}/ansible-execute-keystone-install.log"
+export ANSIBLE_LOG_PATH="${ANSIBLE_LOG_DIR}/ansible-execute-keystone-infrainstall.log"
 
+# Execute the setup of the Keystone environment
+execute_ansible_playbook
+
+# Create an ansible venv matching previous branch
+source ${WORKING_DIR}/tests/create-previous-venv.sh
+
+# Prepare environment for the deploy of previous Keystone:
+# No upgrading or testing is done yet.
+export TEST_PLAYBOOK="${WORKING_DIR}/tests/test-install-previous-keystone.yml"
+export ANSIBLE_LOG_PATH="${ANSIBLE_LOG_DIR}/ansible-execute-keystone-install.log"
+export PREVIOUS_VENV="ansible-previous"
+export ANSIBLE_BIN="${WORKING_DIR}/.tox/${PREVIOUS_VENV}/bin/ansible-playbook"
 # Execute the setup of previous Keystone
 execute_ansible_playbook
+# Unset previous branch overrides
+unset PREVIOUS_VENV
+unset ANSIBLE_BIN
 
 # Prepare environment for the upgrade of Keystone
 export TEST_PLAYBOOK="${WORKING_DIR}/tests/test-upgrade-post.yml"
