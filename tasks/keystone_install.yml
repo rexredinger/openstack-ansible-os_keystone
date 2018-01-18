@@ -170,10 +170,11 @@
     - ansible_pkg_mgr in ['yum', 'dnf', 'zypper']
     - keystone_get_venv | changed
 
-- name: Update virtualenv path
+- name: Reset virtualenv and update its paths
   shell: |
     find {{ keystone_bin }} -name \*.pyc -delete
     sed -si '1s/^.*python.*$/#!{{ keystone_bin | replace ('/','\/') }}\/python/' {{ keystone_bin }}/*
+    virtualenv {{ keystone_bin | dirname }}
   when: keystone_get_venv | changed
   tags:
     - skip_ansible_lint
