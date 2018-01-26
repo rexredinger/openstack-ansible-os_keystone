@@ -21,6 +21,20 @@
   tags:
     - always
 
+- name: Handle deprecation of keystone_memcached_servers
+  set_fact:
+    keystone_cache_servers: "{{ keystone_cache_servers + (_ | deprecated(keystone_memcached_servers, 'keystone_memcached_servers', 'keystone_cache_servers', 'queens')).split(',') }}"
+  when: keystone_memcached_servers is defined
+  tags:
+    - always
+
+- name: Handle deprecation of keystone_cache_backend_argument
+  set_fact:
+    keystone_cache_servers: "{{ keystone_cache_servers + (_ | deprecated(keystone_cache_backend_argument.replace('url:',''), 'keystone_cache_backend_argument', 'keystone_cache_servers', 'queens')).split(',') }}"
+  when: keystone_cache_backend_argument is defined
+  tags:
+    - always
+
 - name: Gather variables for each operating system
   include_vars: "{{ item }}"
   with_first_found:

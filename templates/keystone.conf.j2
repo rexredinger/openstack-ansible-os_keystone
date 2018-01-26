@@ -32,10 +32,15 @@ driver = messagingv2
 transport_url = rabbit://{% for host in keystone_rabbitmq_telemetry_servers.split(',') %}{{ keystone_rabbitmq_telemetry_userid }}:{{ keystone_rabbitmq_telemetry_password }}@{{ host }}:{{ keystone_rabbitmq_telemetry_port }}{% if not loop.last %},{% else %}/{{ keystone_rabbitmq_telemetry_vhost }}{% endif %}{% endfor %}
 {% endif %}
 
-{% if keystone_cache_backend_argument is defined %}
+{% if keystone_cache_servers | length > 0 %}
 [cache]
 backend = dogpile.cache.memcached
-backend_argument = {{ keystone_cache_backend_argument }}
+# FIXME(lbragstad): Some strange behaviors have been reported when using
+# multiple memcached instances with backend_argument. This has been documented
+# in https://bugs.launchpad.net/oslo.cache/+bug/1743036
+# For the time being, memcache_servers works with a single memcached instance
+# and multiple instances.
+memcache_servers = {{ keystone_cache_servers | join(',') }}
 config_prefix = cache.keystone
 distributed_lock = True
 enabled = true

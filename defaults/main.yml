@@ -88,11 +88,6 @@ keystone_resource_driver: sql
 
 keystone_bind_address: 0.0.0.0
 
-## Memcached servers used within keystone.
-# String or Comma separated list of servers.
-keystone_memcached_servers: 127.0.0.1
-keystone_memcached_max_compare_and_set_retry: 16
-
 ## Database info
 keystone_database_connection_string: >-
   mysql+pymysql://{{ keystone_galera_user }}:{{ keystone_container_mysql_password }}@{{ keystone_galera_address }}/{{ keystone_galera_database }}?charset=utf8{% if keystone_galera_use_ssl | bool %}&ssl_ca={{ keystone_galera_ssl_ca_cert }}{% endif %}
@@ -253,8 +248,12 @@ keystone_external_ssl: false
 keystone_secure_proxy_ssl_header: HTTP_X_FORWARDED_PROTO
 
 ## Caching
-# If set this will enable dog pile cache for keystone.
-# keystone_cache_backend_argument: url:127.0.0.1:11211
+# This is a list of strings, each string contains a cache server's
+# information (IP:port for example)
+# The cache_servers default backend is memcached, so this variable
+# should point to a list of memcached servers.
+# If empty, caching is disabled.
+keystone_cache_servers: []
 
 ## LDAP Section
 # Define Keystone LDAP domain configuration here.
