@@ -27,7 +27,7 @@ pushd ${WORKING_DIR}/.tox
   virtualenv ${PREVIOUS_VENV}
   ${PREVIOUS_VENV}/bin/pip install -c https://git.openstack.org/cgit/openstack/requirements/plain/upper-constraints.txt?h=stable/pike \
     -rhttps://git.openstack.org/cgit/openstack/openstack-ansible/plain/global-requirement-pins.txt?h=stable/pike \
-    -r${WORKING_DIR}/tests/common/previous/test-ansible-deps.txt
+    -r${WORKING_DIR}/tests/common/previous/test-ansible-deps.txt ara
   # Display venv contents
   ${PREVIOUS_VENV}/bin/pip freeze
 popd
