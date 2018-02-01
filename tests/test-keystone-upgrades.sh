@@ -78,17 +78,17 @@ export ANSIBLE_LOG_PATH="${ANSIBLE_LOG_DIR}/ansible-execute-keystone-infrainstal
 # Execute the setup of the Keystone environment
 execute_ansible_playbook
 
-# Create an ansible venv matching previous branch
-source ${WORKING_DIR}/tests/create-previous-venv.sh
-
 # Prepare environment for the deploy of previous Keystone:
 # No upgrading or testing is done yet.
 export TEST_PLAYBOOK="${WORKING_DIR}/tests/test-install-previous-keystone.yml"
-export ANSIBLE_LOG_PATH="${ANSIBLE_LOG_DIR}/ansible-execute-keystone-install.log"
+export ANSIBLE_LOG_PATH="${ANSIBLE_LOG_DIR}/ansible-execute-previous_keystone-install.log"
 export PREVIOUS_VENV="ansible-previous"
 export ANSIBLE_BIN="${WORKING_DIR}/.tox/${PREVIOUS_VENV}/bin/ansible-playbook"
+source ${COMMON_TESTS_PATH}/test-create-previous-venv.sh
+
 # Execute the setup of previous Keystone
 execute_ansible_playbook
+
 # Unset previous branch overrides
 unset PREVIOUS_VENV
 unset ANSIBLE_BIN
