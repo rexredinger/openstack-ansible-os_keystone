@@ -48,7 +48,6 @@ enabled = true
 
 
 [revoke]
-caching = true
 driver = {{ keystone_revocation_driver }}
 expiration_buffer = {{ keystone_revocation_expiration_buffer }}
 cache_time = {{ keystone_revocation_cache_time }}
@@ -95,14 +94,12 @@ driver = {{ keystone_assignment_driver }}
 
 [resource]
 cache_time = {{ keystone_resource_cache_time }}
-caching = true
 driver = {{ keystone_resource_driver }}
 
 
 [token]
 enforce_token_bind = permissive
 expiration = {{ keystone_token_expiration }}
-caching = true
 cache_time = {{ keystone_token_cache_time }}
 provider = {{ keystone_token_provider }}
 
