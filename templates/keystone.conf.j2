@@ -32,15 +32,31 @@ driver = messagingv2
 transport_url = rabbit://{% for host in keystone_rabbitmq_telemetry_servers.split(',') %}{{ keystone_rabbitmq_telemetry_userid }}:{{ keystone_rabbitmq_telemetry_password }}@{{ host }}:{{ keystone_rabbitmq_telemetry_port }}{% if not loop.last %},{% else %}/{{ keystone_rabbitmq_telemetry_vhost }}{% endif %}{% endfor %}
 {% endif %}
 
+{% set _memcached_servers = '' %}
 {% if keystone_cache_backend_argument is defined %}
+{%   set _memcached_servers_cleaned = keystone_cache_backend_argument | replace('url:','') %}
+{%   set _memcached_servers_listsrc = _memcached_servers_cleaned.split(',') %}
+{%   set _memcached_servers_listdest = [] %}
+{%   for _server in _memcached_servers_listsrc %}
+{%     if ":" not in _server %}
+{%       set _server = _server ~ ':' ~ memcached_port %}
+{%     endif %}
+{%   set _ = _memcached_servers_listdest.append(_server) %}
+{%   endfor %}
+{%   set _memcached_servers = _memcached_servers_listdest | join(',') %}
+{% elif keystone_memcached_servers is defined %}
+{%   set _memcached_servers = keystone_memcached_servers %}
+{% elif memcached_servers is defined %}
+{%   set _memcached_servers = memcached_servers %}
+{% endif %}
+{% if _memcached_servers | length > 0 %}
 [cache]
 backend = dogpile.cache.memcached
-backend_argument = {{ keystone_cache_backend_argument }}
+memcache_servers = {{ _memcached_servers }}
 config_prefix = cache.keystone
 distributed_lock = True
 enabled = true
 {% endif %}
-
 
 [revoke]
 caching = true

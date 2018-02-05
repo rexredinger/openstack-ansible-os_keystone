@@ -88,11 +88,6 @@ keystone_resource_driver: sql
 
 keystone_bind_address: 0.0.0.0
 
-## Memcached servers used within keystone.
-# String or Comma separated list of servers.
-keystone_memcached_servers: 127.0.0.1
-keystone_memcached_max_compare_and_set_retry: 16
-
 ## DB info
 keystone_galera_user: keystone
 keystone_galera_database: keystone
