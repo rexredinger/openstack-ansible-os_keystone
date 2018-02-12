@@ -34,4 +34,3 @@
         - openstack-ansible-functional-ubuntu-xenial
         - openstack-ansible-upgrade-ubuntu-xenial
         - openstack-ansible-uw_apache-ubuntu-xenial
-        - openstack-ansible-keystone-ssl-nv
