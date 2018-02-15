@@ -13,17 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: keystone_idp_self_signed_create.yml
+- include_tasks: keystone_idp_self_signed_create.yml
   when: inventory_hostname == groups['keystone_all'][0]
 
-- include: keystone_idp_self_signed_store.yml
+- include_tasks: keystone_idp_self_signed_store.yml
   when: inventory_hostname == groups['keystone_all'][0]
 
-- include: keystone_idp_self_signed_distribute.yml
+- include_tasks: keystone_idp_self_signed_distribute.yml
   when: inventory_hostname != groups['keystone_all'][0]
 
-- include: keystone_idp_metadata.yml
+- include_tasks: keystone_idp_metadata.yml
 
-- include: keystone_idp_sp_setup.yml
-  static: no
+- include_tasks: keystone_idp_sp_setup.yml
   when: keystone_service_setup | bool

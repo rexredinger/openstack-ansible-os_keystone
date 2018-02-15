@@ -30,4 +30,4 @@
     - Manage LB
     - Restart uWSGI
 
-- include: "keystone_init_{{ ansible_service_mgr }}.yml"
+- include_tasks: "keystone_init_{{ ansible_service_mgr }}.yml"

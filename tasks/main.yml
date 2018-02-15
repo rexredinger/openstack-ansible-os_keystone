@@ -47,11 +47,11 @@
   tags:
     - always
 
-- include: keystone_pre_install.yml
+- include_tasks: keystone_pre_install.yml
   tags:
     - keystone-install
 
-- include: keystone_install.yml
+- include_tasks: keystone_install.yml
   tags:
     - keystone-install
 
@@ -62,77 +62,72 @@
   tags:
     - keystone-config
 
-- include: keystone_post_install.yml
+- include_tasks: keystone_post_install.yml
   tags:
     - keystone-config
 
-- include: keystone_key_setup.yml
+- include_tasks: keystone_key_setup.yml
   tags:
     - keystone-config
 
-- include: keystone_fernet.yml
-  static: no
+- include_tasks: keystone_fernet.yml
   when:
     - "'fernet' in keystone_token_provider"
     - keystone_service_setup | bool
   tags:
     - keystone-config
 
-- include: keystone_credential.yml
-  static: no
+- include_tasks: keystone_credential.yml
   when: keystone_service_setup | bool
   tags:
     - keystone-config
 
-- include: keystone_federation_sp_setup.yml
-  static: no
+- include_tasks: keystone_federation_sp_setup.yml
   when: keystone_sp != {}
   tags:
     - keystone-config
 
-- include: keystone_db_setup.yml
+- include_tasks: keystone_db_setup.yml
   when:
     - "keystone_database_enabled | bool"
   tags:
     - keystone-config
 
-- include: keystone_token_cleanup.yml
-  static: no
+- include_tasks: keystone_token_cleanup.yml
   when:
     - "'uuid' in keystone_token_provider"
   run_once: yes
   tags:
     - keystone-install
 
-- include: keystone_ssl.yml
+- include_tasks: keystone_ssl.yml
   tags:
     - keystone-config
 
-- include: "keystone_{{ keystone_web_server }}.yml"
+- include_tasks: "keystone_{{ keystone_web_server }}.yml"
   tags:
     - keystone-config
 
-- include: keystone_uwsgi.yml
+- include_tasks: keystone_uwsgi.yml
   tags:
     - keystone-config
 
 - name: Flush handlers
   meta: flush_handlers
 
-- include: keystone_service_setup.yml
+- include_tasks: keystone_service_setup.yml
   when:
     - keystone_service_setup | bool
   run_once: yes
   tags:
     - keystone-config
 
-- include: keystone_ldap_setup.yml
-  static: no
+- include_tasks: keystone_ldap_setup.yml
   when: keystone_service_setup | bool
   tags:
     - keystone-config
 
-- include: keystone_federation_sp_idp_setup.yml
+- include_tasks: keystone_federation_sp_idp_setup.yml
   when:
     - keystone_service_setup | bool
     - keystone_sp != {}
@@ -143,8 +138,7 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- include: keystone_idp_setup.yml
-  static: no
+- include_tasks: keystone_idp_setup.yml
   when: keystone_idp != {}
   tags:
     - keystone-config
