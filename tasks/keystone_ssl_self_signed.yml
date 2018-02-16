@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: keystone_ssl_key_create.yml
+- include_tasks: keystone_ssl_key_create.yml
   when: inventory_hostname == groups['keystone_all'][0]
 
-- include: keystone_ssl_key_store.yml
+- include_tasks: keystone_ssl_key_store.yml
   when: inventory_hostname == groups['keystone_all'][0]
 
-- include: keystone_ssl_key_distribute.yml
+- include_tasks: keystone_ssl_key_distribute.yml
   when: inventory_hostname != groups['keystone_all'][0]

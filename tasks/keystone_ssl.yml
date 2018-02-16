@@ -13,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- include: keystone_ssl_self_signed.yml
-  static: no
+- include_tasks: keystone_ssl_self_signed.yml
   when:
     - keystone_ssl | bool
     - keystone_user_ssl_cert is not defined or keystone_user_ssl_key is not defined
 
-- include: keystone_ssl_user_provided.yml
+- include_tasks: keystone_ssl_user_provided.yml
