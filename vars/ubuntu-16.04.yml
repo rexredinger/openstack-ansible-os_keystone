@@ -14,8 +14,6 @@
 # limitations under the License.
 
 keystone_distro_packages:
-  - debhelper
-  - dh-apparmor
   - docutils-common
   - git
   - libffi-dev
