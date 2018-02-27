@@ -153,15 +153,6 @@ keystone_service_publicuri: "{{ keystone_service_publicuri_proto }}://{{ externa
 keystone_service_internaluri: "{{ keystone_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ keystone_service_port }}"
 keystone_service_adminuri: "{{ keystone_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ keystone_admin_port }}"
 
-keystone_service_publicurl_v3: "{{ keystone_service_publicuri }}/v3"
-keystone_service_internalurl_v3: "{{ keystone_service_internaluri }}/v3"
-keystone_service_adminurl_v3: "{{ keystone_service_adminuri }}/v3"
-
-keystone_service_publicurl: "{{ keystone_service_publicurl_v3 }}"
-keystone_service_internalurl: "{{ keystone_service_internalurl_v3 }}"
-keystone_service_adminurl: "{{ keystone_service_adminurl_v3 }}"
-
-
 ## Set this value to override the "public_endpoint" keystone.conf variable
 #keystone_public_endpoint: "{{ keystone_service_publicuri }}"
 
@@ -295,8 +286,8 @@ keystone_idp: {}
 #  keyfile: "/etc/keystone/ssl/idp_signing_key.pem"
 #  self_signed_cert_subject: "/C=US/ST=Texas/L=San Antonio/O=IT/CN={{ external_lb_vip_address }}"
 #  regen_cert: false
-#  idp_entity_id: "{{ keystone_service_publicurl_v3 }}/OS-FEDERATION/saml2/idp"
-#  idp_sso_endpoint: "{{ keystone_service_publicurl_v3 }}/OS-FEDERATION/saml2/sso"
+#  idp_entity_id: "{{ keystone_service_publicuri }}/v3//OS-FEDERATION/saml2/idp"
+#  idp_sso_endpoint: "{{ keystone_service_publicuri }}/v3/OS-FEDERATION/saml2/sso"
 #  idp_metadata_path: /etc/keystone/saml2_idp_metadata.xml
 #  service_providers:
 #    - id: "sp_1"
