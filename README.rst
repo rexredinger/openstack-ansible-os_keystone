@@ -2,8 +2,8 @@
 Team and repository tags
 ========================
 
-.. image:: http://governance.openstack.org/badges/openstack-ansible-os_keystone.svg
-    :target: http://governance.openstack.org/reference/tags/index.html
+.. image:: https://governance.openstack.org/tc/badges/openstack-ansible-os_keystone.svg
+    :target: https://governance.openstack.org/tc/reference/tags/index.html
 
 .. Change things from this point on
 
@@ -18,5 +18,5 @@ default.
 Documentation for the project can be found at:
 `<https://docs.openstack.org/openstack-ansible-os_keystone/latest/>`_
 The project home is at:
-`<http://launchpad.net/openstack-ansible>`_
+`<https://launchpad.net/openstack-ansible>`_
 
