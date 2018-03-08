@@ -44,25 +44,27 @@
     - keystone-config
 
 # When keystone is initially built, the service does not yet exist on the
-# host this task is executed on. We therefore use failed_when for the task
-# to catch a failure that's outside the norm.
-- name: Ensure keystone service is stopped
+# host this task is executed on. Detect the presence of the services.
+- name: Test if keystone service exists
   service:
     name: "{{ item }}"
+  check_mode: yes
+  register: keystone_service_exists
+  with_items: "{{ keystone_wsgi_program_names }}"
+
+- name: Ensure keystone service is stopped
+  service:
+    name: "{{ item.name }}"
     state: stopped
   register: _stop
   until: _stop | success
   retries: 5
   delay: 2
-  with_items: "{{ keystone_wsgi_program_names }}"
+  with_items: "{{ keystone_service_exists.results }}"
   when:
     - "(ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool) or
        (ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool)"
-  failed_when:
-    - "_stop.msg is defined"
-    - "'no service or tool' not in _stop.msg"
-    - "'systemd could not find' not in _stop.msg"
-    - "'Could not find the requested service' not in _stop.msg"
+    - "(item.status['LoadState'] == 'loaded' | bool)"
   notify:
     - Restart uWSGI
 
