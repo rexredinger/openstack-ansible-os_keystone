@@ -58,7 +58,7 @@
     name: "{{ (keystone_web_server == 'nginx') | ternary(keystone_system_service_name, 'nginx') }}"
     enabled: no
     state: stopped
-    daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
+    daemon_reload: "yes"
   failed_when: false
 
 - name: Remove other web server distro packages and mod_wsgi
