@@ -54,7 +54,7 @@
   until: _stop | success
   retries: 5
   delay: 2
-  with_items: "{{ keystone_wsgi_program_names }}"
+  with_items: "{{ keystone_services.keys() }}"
   when:
     - "(ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool) or
        (ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool)"
