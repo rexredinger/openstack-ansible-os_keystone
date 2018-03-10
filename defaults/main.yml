@@ -487,3 +487,6 @@ keystone_uwsgi_init_overrides: {}
 #     - parameter: "Access-Control-Allow-Origin"
 #       value: "*"
 keystone_extra_headers: []
+
+# List of trusted IPs which can pass X-Forwarded-For
+keystone_set_real_ip_from: []
