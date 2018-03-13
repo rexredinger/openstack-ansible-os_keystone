@@ -13,8 +13,8 @@ complete example:
       keyfile: "/etc/keystone/ssl/idp_signing_key.pem"
       self_signed_cert_subject: "/C=US/ST=Texas/L=San Antonio/O=IT/CN={{ external_lb_vip_address }}"
       regen_cert: false
-      idp_entity_id: "{{ keystone_service_publicurl_v3 }}/OS-FEDERATION/saml2/idp"
-      idp_sso_endpoint: "{{ keystone_service_publicurl_v3 }}/OS-FEDERATION/saml2/sso"
+      idp_entity_id: "{{ keystone_service_publicuri }}/v3/OS-FEDERATION/saml2/idp"
+      idp_sso_endpoint: "{{ keystone_service_publicuri }}/v3/OS-FEDERATION/saml2/sso"
       idp_metadata_path: /etc/keystone/saml2_idp_metadata.xml
       service_providers:
         - id: "sp_1"
