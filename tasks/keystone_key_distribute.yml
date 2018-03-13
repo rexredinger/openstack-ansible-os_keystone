@@ -17,6 +17,6 @@
   authorized_key:
     user: "{{ keystone_system_user_name }}"
     key: "{{ keystone_pubkey | b64decode }}"
-  when: keystone_pubkey is defined
+  when: inventory_hostname == ansible_play_batch[0]
   delegate_to: "{{ item }}"
   with_items: "{{ ansible_play_hosts }}"
