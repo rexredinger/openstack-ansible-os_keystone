@@ -201,7 +201,11 @@ keystone_wsgi_threads: 1
 ## Cap the maximun number of processes when a user value is unspecified.
 keystone_wsgi_processes_max: 16
 keystone_wsgi_processes: "{{ [[ansible_processor_vcpus|default(1), 1] | max * 2, keystone_wsgi_processes_max] | min }}"
-
+keystone_wsgi_public_program_name: keystone-wsgi-public
+keystone_wsgi_admin_program_name: keystone-wsgi-admin
+keystone_wsgi_program_names:
+  - "{{ keystone_wsgi_public_program_name }}"
+  - "{{ keystone_wsgi_admin_program_name }}"
 keystone_uwsgi_ports:
   keystone-wsgi-public:
     http: 37358
@@ -209,7 +213,6 @@ keystone_uwsgi_ports:
   keystone-wsgi-admin:
     http: 37359
     socket: 5001
-
 keystone_uwsgi_ini_overrides: {}
 
 # set keystone_ssl to true to enable SSL configuration on the keystone containers
@@ -461,19 +464,6 @@ keystone_required_secrets:
   - keystone_service_password
 
 keystone_uwsgi_init_overrides: {}
-
-## Service Name-Group Mapping
-keystone_services:
-  keystone-wsgi-public:
-    service_name: "keystone-wsgi-public"
-    init_config_overrides: "{{ keystone_uwsgi_init_overrides }}"
-    program_config_options: "--ini /etc/uwsgi/keystone-wsgi-public.ini"
-    program_override: "{{ keystone_bin }}/uwsgi"
-  keystone-wsgi-admin:
-    service_name: "keystone-wsgi-admin"
-    init_config_overrides: "{{ keystone_uwsgi_init_overrides }}"
-    program_config_options: "--ini /etc/uwsgi/keystone-wsgi-admin.ini"
-    program_override: "{{ keystone_bin }}/uwsgi"
 
 ## Extra HTTP headers for Keystone
 # Add any additional headers here that Keystone should return.
