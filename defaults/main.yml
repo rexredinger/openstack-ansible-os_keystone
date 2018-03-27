@@ -41,8 +41,19 @@ keystone_developer_mode: false
 keystone_developer_constraints:
   - "git+{{ keystone_git_repo }}@{{ keystone_git_install_branch }}#egg=keystone"
 
+# TODO(odyssey4me):
+# This can be simplified once all the roles are using
+# python_venv_build. We can then switch to using a
+# set of constraints in pip.conf inside the venv,
+# perhaps prepared by giving a giving a list of
+# constraints to the role.
+keystone_pip_install_args: >-
+  {{ keystone_developer_mode | ternary(pip_install_developer_constraints | default('--constraint /opt/developer-pip-constraints.txt'), '') }}
+  {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''), '') }}
+  {{ pip_install_options | default('') }}
+
 # Name of the virtual env to deploy into
-keystone_venv_tag: untagged
+keystone_venv_tag: "{{ venv_tag | default('untagged') }}"
 keystone_bin: "{{ _keystone_bin }}"
 
 # venv_download, even when true, will use the fallback method of building the

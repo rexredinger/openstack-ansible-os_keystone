@@ -136,9 +136,7 @@
       state: "True"
     - name: "install_method"
       state: "{{ keystone_install_method }}"
-  when: (keystone_install_method == 'source' and
-        (keystone_get_venv | changed or keystone_venv_dir | changed)) or
-        (install_packages | changed) or
+  when: (install_packages | changed) or
         (ansible_local is not defined) or
         ('openstack_ansible' not in ansible_local) or
         ('keystone' not in ansible_local['openstack_ansible']) or

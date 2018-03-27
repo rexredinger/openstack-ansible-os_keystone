@@ -23,6 +23,8 @@
   until: _restart is success
   retries: 5
   delay: 2
+  listen:
+    - "venv changed"
 
 - name: Wait for web server to complete starting
   wait_for:
@@ -35,7 +37,9 @@
   register: _wait_check
   until: _wait_check is success
   retries: 5
-  listen: "Restart web server"
+  listen:
+    - "venv changed"
+    - "Restart web server"
 
 - name: Stop uWSGI
   service:
@@ -47,7 +51,9 @@
   retries: 5
   delay: 2
   with_items: "{{ keystone_services.keys() | list }}"
-  listen: "Restart uWSGI"
+  listen:
+    - "venv changed"
+    - "Restart uWSGI"
 
 # Note (odyssey4me):
 # The policy.json file is currently read continually by the services
@@ -61,7 +67,9 @@
   stat:
     path: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
   register: _custom_policy_file
-  listen: "Restart uWSGI"
+  listen:
+    - "venv changed"
+    - "Restart uWSGI"
 
 - name: Copy new policy file into place
   copy:
@@ -73,7 +81,9 @@
     remote_src: yes
   when:
     - _custom_policy_file['stat']['exists'] | bool
-  listen: "Restart uWSGI"
+  listen:
+    - "venv changed"
+    - "Restart uWSGI"
 
 - name: Start uWSGI
   service:
@@ -86,7 +96,9 @@
   retries: 5
   delay: 2
   with_items: "{{ keystone_services.keys() | list }}"
-  listen: "Restart uWSGI"
+  listen:
+    - "venv changed"
+    - "Restart uWSGI"
 
 - name: Wait for uWSGI socket to be ready
   wait_for:
@@ -99,7 +111,9 @@
   register: _wait_check
   until: _wait_check is success
   retries: 5
-  listen: "Restart uWSGI"
+  listen:
+    - "venv changed"
+    - "Restart uWSGI"
 
 - name: Restart Shibd
   service:
