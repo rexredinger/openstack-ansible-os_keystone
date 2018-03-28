@@ -50,7 +50,7 @@
     name: "{{ item }}"
   check_mode: yes
   register: keystone_service_exists
-  with_items: "{{ keystone_wsgi_program_names }}"
+  with_items: "{{ keystone_services.keys() | list }}"
 
 - name: Ensure keystone service is stopped
   service:

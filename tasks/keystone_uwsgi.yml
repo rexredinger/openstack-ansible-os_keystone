@@ -25,9 +25,33 @@
     mode: "0744"
     config_overrides: "{{ keystone_uwsgi_ini_overrides }}"
     config_type: ini
-  with_items: "{{ keystone_wsgi_program_names }}"
+  with_items: "{{ keystone_services.keys() | list }}"
   notify:
     - Manage LB
     - Restart uWSGI
 
-- include_tasks: "keystone_init_{{ ansible_service_mgr }}.yml"
+- name: Run the systemd service role
+  include_role:
+    name: systemd_service
+    private: true
+  vars:
+    systemd_user_name: "{{ keystone_system_user_name }}"
+    systemd_group_name: "{{ keystone_system_group_name }}"
+    systemd_tempd_prefix: openstack
+    systemd_slice_name: keystone
+    system_lock_path: /var/lock/keystone
+    systemd_CPUAccounting: true
+    systemd_BlockIOAccounting: true
+    systemd_MemoryAccounting: true
+    systemd_TasksAccounting: true
+    systemd_services:
+      - service_name: "{{ service_var.service_name }}"
+        enabled: yes
+        state: started
+        execstarts: "{{ service_var.execstarts }}"
+        config_overrides: "{{ service_var.init_config_overrides }}"
+  with_items: "{{ keystone_services.values() | list }}"
+  loop_control:
+    loop_var: service_var
+  tags:
+    - keystone-config
