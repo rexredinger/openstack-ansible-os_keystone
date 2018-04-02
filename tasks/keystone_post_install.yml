@@ -21,14 +21,34 @@
   with_items: "{{ ansible_play_hosts }}"
   when: "inventory_hostname == ansible_play_hosts[0]"
 
-- name: Retrieve default configuration files
-  uri:
-    url: "{{ item }}"
-    return_content: yes
+- name: Check whether user-provided configuration files are provided
+  stat:
+    path: "{{ item }}"
   with_items:
-    - "{{ keystone_git_config_lookup_location }}/{{ keystone_paste_git_file_path }}"
-    - "{{ keystone_git_config_lookup_location }}/{{ keystone_sso_callback_git_file_path }}"
-  register: _git_file_fetch
+    - "{{ keystone_paste_default_file_path }}"
+    - "{{ keystone_policy_default_file_path }}"
+    - "{{ keystone_sso_callback_file_path }}"
+  register: _user_provided_config_files
+  delegate_to: localhost
+
+- name: Ensure that local config cache path exists on the deploy host
+  file:
+    path: "{{ keystone_config_cache_path }}"
+    state: directory
+    owner: "{{ keystone_config_cache_path_owner }}"
+  delegate_to: localhost
+  run_once: yes
+
+- name: Retrieve default configuration files from venv
+  fetch:
+    src: "{{ keystone_bin | dirname }}/etc/keystone/{{ item }}"
+    dest: "{{ keystone_config_cache_path }}/"
+    flat: yes
+  with_items:
+    - "{{ keystone_paste_default_file_path | basename }}"
+    - "{{ keystone_sso_callback_file_path | basename }}"
+  run_once: yes
+  register: _venv_config_file_fetch
 
 - name: Copy keystone configuration files
   config_template:
@@ -40,19 +60,26 @@
     mode: "0640"
     config_overrides: "{{ item.config_overrides }}"
     config_type: "{{ item.config_type }}"
+  when:
+    - item.condition | default(True)
   with_items:
     - src: "keystone.conf.j2"
       dest: "/etc/keystone/keystone.conf"
       config_overrides: "{{ keystone_keystone_conf_overrides }}"
       config_type: "ini"
-    - dest: "/etc/keystone/keystone-paste.ini"
+    - src: >-
+        {{ (_user_provided_config_files['results'][0]['stat']['exists'] | bool) |
+           ternary(keystone_paste_default_file_path,
+           keystone_config_cache_path ~ '/' ~ keystone_paste_default_file_path | basename) }}
+      dest: "/etc/keystone/keystone-paste.ini"
       config_overrides: "{{ keystone_keystone_paste_ini_overrides }}"
       config_type: "ini"
-      content: "{{ keystone_paste_user_content | default(keystone_paste_default_content, true) }}"
-    - dest: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
+    - src: "{{ keystone_policy_default_file_path }}"
+      dest: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
       config_overrides: "{{ keystone_policy_overrides }}"
       config_type: "json"
-      content: "{{ keystone_policy_user_content | default('{}', true) }}"
+      condition: >-
+        {{ _user_provided_config_files['results'][1]['stat']['exists'] | bool }}
   notify:
     - Manage LB
     - Restart uWSGI
@@ -60,7 +87,10 @@
 
 - name: Copy Keystone Federation SP SSO callback template
   copy:
-    content: "{{ keystone_sso_callback_user_content | default(keystone_sso_callback_default_content, true) }}"
+    src: >-
+        {{ (_user_provided_config_files['results'][2]['stat']['exists'] | bool) |
+           ternary(keystone_sso_callback_file_path,
+           keystone_config_cache_path ~ '/' ~ keystone_sso_callback_file_path | basename) }}
     dest: "/etc/keystone/sso_callback_template.html"
     owner: "{{ keystone_system_user_name }}"
     group: "{{ keystone_system_group_name }}"

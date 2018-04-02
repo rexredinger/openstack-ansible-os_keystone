@@ -35,15 +35,3 @@ keystone_package_list: |-
   {%   set _ = packages.extend(keystone_developer_mode_distro_packages) %}
   {% endif %}
   {{ packages }}
-
-# These vars find a file on the deployment node, if it exists - otherwise the result is empty.
-keystone_paste_user_content: "{{ lookup('pipe', 'cat ' ~ keystone_paste_default_file_path ~ ' 2>/dev/null || true') }}"
-keystone_policy_user_content: "{{ lookup('pipe', 'cat ' ~ keystone_policy_default_file_path ~ ' 2>/dev/null || true') }}"
-keystone_sso_callback_user_content: "{{ lookup('pipe', 'cat ' ~  keystone_sso_callback_file_path ~ ' 2>/dev/null || true') }}"
-
-# These vars find the appropriate result content from the with_items loop
-keystone_paste_default_content: |
-  {{ _git_file_fetch.results | selectattr('item', 'equalto', keystone_git_config_lookup_location ~ '/' ~ keystone_paste_git_file_path) | map(attribute='content') | first }}
-
-keystone_sso_callback_default_content: |
-  {{ _git_file_fetch.results | selectattr('item', 'equalto', keystone_git_config_lookup_location ~ '/' ~ keystone_sso_callback_git_file_path) | map(attribute='content') | first }}

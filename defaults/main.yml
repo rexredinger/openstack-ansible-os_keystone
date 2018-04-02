@@ -440,12 +440,13 @@ keystone_paste_default_file_path: "/etc/openstack_deploy/keystone/keystone-paste
 keystone_policy_default_file_path: "/etc/openstack_deploy/keystone/policy.json"
 keystone_sso_callback_file_path: "/etc/openstack_deploy/keystone/sso_callback_template.html"
 
-# If the above-mentioned files do not exist, then these
-# paths will be used to find the files from the git config
-# lookup location.
-keystone_git_config_lookup_location: https://git.openstack.org/cgit/openstack/keystone/plain
-keystone_paste_git_file_path: "etc/keystone-paste.ini?h={{ keystone_git_install_branch }}"
-keystone_sso_callback_git_file_path: "etc/sso_callback_template.html?h={{ keystone_git_install_branch }}"
+# If the above-mentioned files do not exist, then the defaults
+# inside the venvs will be used, but cached at this location
+# on the deployment host. Using the cache makes the re-use
+# of the files faster when deploying, but is also required in
+# order to still be able to apply the config_template override.
+keystone_config_cache_path: "{{ lookup('env', 'HOME') | default('/opt', true) }}/cache/keystone"
+keystone_config_cache_path_owner: "{{ lookup('env', 'USER') | default('root', true) }}"
 
 #: Tunable var-based overrides
 # The contents of these are templated over the default files.

@@ -57,6 +57,12 @@
 # important during a major upgrade. We therefore only put the policy
 # file in place after the service has been stopped.
 #
+- name: Check whether a custom policy file is being used
+  stat:
+    path: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
+  register: _custom_policy_file
+  listen: "Restart uWSGI"
+
 - name: Copy new policy file into place
   copy:
     src: "/etc/keystone/policy.json-{{ keystone_venv_tag }}"
@@ -65,6 +71,8 @@
     group: "{{ keystone_system_group_name }}"
     mode: "0640"
     remote_src: yes
+  when:
+    - _custom_policy_file['stat']['exists'] | bool
   listen: "Restart uWSGI"
 
 - name: Start uWSGI
