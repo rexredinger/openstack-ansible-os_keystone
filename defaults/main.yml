@@ -21,6 +21,9 @@ debug: False
 keystone_package_state: "latest"
 keystone_pip_package_state: "latest"
 
+# Set installation method.
+keystone_install_method: "source"
+
 # Role standard API override this option in the OS variable files
 keystone_shibboleth_repo: {}
 
@@ -35,7 +38,7 @@ keystone_developer_constraints:
 
 # Name of the virtual env to deploy into
 keystone_venv_tag: untagged
-keystone_bin: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin"
+keystone_bin: "{{ _keystone_bin }}"
 
 # venv_download, even when true, will use the fallback method of building the
 # venv from scratch if the venv download fails.
@@ -467,11 +470,11 @@ keystone_services:
   keystone-wsgi-public:
     service_name: "keystone-wsgi-public"
     init_config_overrides: "{{ keystone_uwsgi_init_overrides }}"
-    execstarts: "{{ keystone_bin }}/uwsgi --autoload --ini /etc/uwsgi/keystone-wsgi-public.ini"
+    execstarts: "{{ keystone_uwsgi_bin }}/uwsgi --autoload --ini /etc/uwsgi/keystone-wsgi-public.ini"
   keystone-wsgi-admin:
     service_name: "keystone-wsgi-admin"
     init_config_overrides: "{{ keystone_uwsgi_init_overrides }}"
-    execstarts: "{{ keystone_bin }}/uwsgi --autoload --ini /etc/uwsgi/keystone-wsgi-admin.ini"
+    execstarts: "{{ keystone_uwsgi_bin }}/uwsgi --autoload --ini /etc/uwsgi/keystone-wsgi-admin.ini"
 
 ## Extra HTTP headers for Keystone
 # Add any additional headers here that Keystone should return.

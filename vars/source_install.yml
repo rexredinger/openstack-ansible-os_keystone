@@ -35,3 +35,7 @@ keystone_package_list: |-
   {%   set _ = packages.extend(keystone_developer_mode_distro_packages) %}
   {% endif %}
   {{ packages }}
+
+_keystone_bin: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin"
+_keystone_etc: "{{ _keystone_bin | dirname + '/etc' }}"
+keystone_uwsgi_bin: "{{ _keystone_bin }}"

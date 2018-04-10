@@ -30,6 +30,11 @@ keystone_distro_packages:
   - rsync
   - which
 
+keystone_service_distro_packages:
+  - openstack-keystone
+  - uwsgi
+  - uwsgi-plugin-python
+
 keystone_apache_distro_packages:
   - httpd
   - httpd-tools
@@ -74,3 +79,5 @@ keystone_apache_configs:
 keystone_nginx_conf_path: "conf.d"
 
 keystone_system_service_name: httpd
+
+keystone_uwsgi_bin: '/usr/sbin'

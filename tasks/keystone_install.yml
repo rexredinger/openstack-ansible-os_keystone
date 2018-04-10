@@ -81,114 +81,34 @@
     - Manage LB
     - Restart web server
 
-- name: Create developer mode constraint file
-  copy:
-    dest: "/opt/developer-pip-constraints.txt"
-    content: |
-      {% for item in keystone_developer_constraints %}
-      {{ item }}
-      {% endfor %}
-  when: keystone_developer_mode | bool
+- name: Install keystone packages from PIP
+  include_tasks: keystone_install_source.yml
+  when: keystone_install_method == 'source'
 
-- name: Install required pip packages
-  pip:
-    name: "{{ keystone_requires_pip_packages }}"
-    state: "{{ keystone_pip_package_state }}"
-    extra_args: >-
-      {{ keystone_developer_mode | ternary(pip_install_developer_constraints | default('--constraint /opt/developer-pip-constraints.txt'), '') }}
-      {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
-      {{ pip_install_options | default('') }}
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-
-- name: Retrieve checksum for venv download
-  uri:
-    url: "{{ keystone_venv_download_url | replace('tgz', 'checksum') }}"
-    return_content: yes
-  register: keystone_venv_checksum
-  when: keystone_venv_download | bool
-
-- name: Attempt venv download
-  get_url:
-    url: "{{ keystone_venv_download_url }}"
-    dest: "/var/cache/{{ keystone_venv_download_url | basename }}"
-    checksum: "sha1:{{ keystone_venv_checksum.content | trim }}"
-  register: keystone_get_venv
-  when: keystone_venv_download | bool
-
-- name: Remove existing venv
-  file:
-    path: "{{ keystone_bin | dirname }}"
-    state: absent
-  when: keystone_get_venv | changed
-
-- name: Create keystone venv dir
-  file:
-    path: "{{ keystone_bin | dirname }}"
-    state: directory
-  register: keystone_venv_dir
-  when: keystone_get_venv | changed
-
-- name: Unarchive pre-built venv
-  unarchive:
-    src: "/var/cache/{{ keystone_venv_download_url | basename }}"
-    dest: "{{ keystone_bin | dirname }}"
-    copy: "no"
-  when: keystone_get_venv | changed
-  notify:
-    - Manage LB
-    - Restart uWSGI
-    - Restart web server
-
-- name: Install pip packages
-  pip:
-    name: "{{ keystone_pip_packages }}"
-    state: "{{ keystone_pip_package_state }}"
-    virtualenv: "{{ keystone_bin | dirname }}"
-    virtualenv_site_packages: "no"
-    extra_args: >-
-      {{ keystone_developer_mode | ternary(pip_install_developer_constraints | default('--constraint /opt/developer-pip-constraints.txt'), '') }}
-      {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
-      {{ pip_install_options | default('') }}
-  register: install_packages
-  until: install_packages|success
-  retries: 5
-  delay: 2
-  when: keystone_get_venv | failed or keystone_get_venv | skipped
-  notify:
-    - Manage LB
-    - Restart uWSGI
-    - Restart web server
-
-- name: Remove python from path first (CentOS, openSUSE)
-  file:
-    path:  "{{ keystone_bin | dirname }}/bin/python2.7"
-    state: "absent"
-  when:
-    - ansible_pkg_mgr in ['yum', 'dnf', 'zypper']
-    - keystone_get_venv | changed
-
-# NOTE(odyssey4me):
-# We reinitialize the venv to ensure that the right
-# version of python is in the venv, but we do not
-# want virtualenv to also replace pip, setuptools
-# and wheel so we tell it not to.
-# We do not use --always-copy for CentOS/SuSE due
-# to https://github.com/pypa/virtualenv/issues/565
-- name: Reset virtualenv and update its paths
-  shell: |
-    find {{ keystone_bin }} -name \*.pyc -delete
-    sed -si '1s/^.*python.*$/#!{{ keystone_bin | replace ('/','\/') }}\/python/' {{ keystone_bin }}/*
-    virtualenv {{ keystone_bin | dirname }} \
-        {{ (ansible_pkg_mgr == 'apt') | ternary('--always-copy', '') }} \
-        --no-pip \
-        --no-setuptools \
-        --no-wheel
-  when: keystone_get_venv | changed
-  tags:
-    - skip_ansible_lint
+- name: Initialise the upgrade facts
+  ini_file:
+    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
+    section: keystone
+    option: "{{ item.name }}"
+    value: "{{ item.state }}"
+  with_items:
+    - name: "need_db_expand"
+      state: "True"
+    - name: "need_db_migrate"
+      state: "True"
+    - name: "need_db_contract"
+      state: "True"
+    - name: "install_method"
+      state: "{{ keystone_install_method }}"
+  when: (keystone_install_method == 'source' and
+        (keystone_get_venv | changed or keystone_venv_dir | changed)) or
+        (install_packages | changed) or
+        (ansible_local is not defined) or
+        ('openstack_ansible' not in ansible_local) or
+        ('keystone' not in ansible_local['openstack_ansible']) or
+        ('need_db_expand' not in ansible_local['openstack_ansible']['keystone']) or
+        ('need_db_migrate' not in ansible_local['openstack_ansible']['keystone']) or
+        ('need_db_contract' not in ansible_local['openstack_ansible']['keystone'])
 
 - name: Create WSGI symlinks
   file:
@@ -204,33 +124,3 @@
   notify:
     - Manage LB
     - Restart web server
-
-- name: Initialise the upgrade facts
-  ini_file:
-    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
-    section: keystone
-    option: "{{ item.name }}"
-    value: "{{ item.state }}"
-  with_items:
-    - name: "need_db_expand"
-      state: "True"
-    - name: "need_db_migrate"
-      state: "True"
-    - name: "need_db_contract"
-      state: "True"
-  when: (keystone_get_venv | changed) or
-        (keystone_venv_dir | changed) or
-        (install_packages | changed) or
-        (ansible_local is not defined) or
-        ('openstack_ansible' not in ansible_local) or
-        ('keystone' not in ansible_local['openstack_ansible']) or
-        ('need_db_expand' not in ansible_local['openstack_ansible']['keystone']) or
-        ('need_db_migrate' not in ansible_local['openstack_ansible']['keystone']) or
-        ('need_db_contract' not in ansible_local['openstack_ansible']['keystone'])
-
-- name: Record the venv tag deployed
-  ini_file:
-    dest: "/etc/ansible/facts.d/openstack_ansible.fact"
-    section: keystone
-    option: venv_tag
-    value: "{{ keystone_venv_tag }}"

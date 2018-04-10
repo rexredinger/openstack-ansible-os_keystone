@@ -41,7 +41,7 @@
 
 - name: Retrieve default configuration files from venv
   fetch:
-    src: "{{ keystone_bin | dirname }}/etc/keystone/{{ item }}"
+    src: "{{ _keystone_etc }}/keystone/{{ item }}"
     dest: "{{ keystone_config_cache_path }}/"
     flat: yes
   with_items:

@@ -28,6 +28,11 @@ keystone_distro_packages:
   - python-keystoneclient # Keystoneclient needed to OSA keystone lib
   - rsync
 
+keystone_service_distro_packages:
+  - keystone
+  - uwsgi
+  - uwsgi-plugin-python
+
 keystone_apache_distro_packages:
   - apache2
   - apache2-utils
@@ -82,3 +87,5 @@ keystone_apache_modules:
 keystone_nginx_conf_path: "sites-available"
 
 keystone_system_service_name: apache2
+
+keystone_uwsgi_bin: '/usr/bin'

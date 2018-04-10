@@ -24,6 +24,11 @@
         - openstack-ansible-uw_apache-centos-7-nv
         - openstack-ansible-uw_apache-ubuntu-xenial
         - openstack-ansible-keystone-ssl-nv
+        - openstack-ansible-functional-distro_install-ubuntu-xenial
+          # NOTE(hwoarang) Centos7 is having some troubles with repo dependencies
+          # so disabling until it's investigated.
+        - openstack-ansible-functional-distro_install-centos-7-nv
+        - openstack-ansible-functional-distro_install-opensuse-423
     experimental:
       jobs:
         - openstack-ansible-integrated-deploy-aio

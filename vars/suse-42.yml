@@ -30,6 +30,11 @@ keystone_distro_packages:
   - rsync
   - which
 
+keystone_service_distro_packages:
+  - openstack-keystone
+  - uwsgi
+  - uwsgi-python
+
 keystone_apache_distro_packages:
   - apache2
   - apache2-utils
@@ -94,3 +99,5 @@ keystone_apache_modules:
 keystone_nginx_conf_path: 'conf.d'
 
 keystone_system_service_name: apache2
+
+keystone_uwsgi_bin: '/usr/sbin'
