@@ -11,6 +11,7 @@
             state: "present"
           delegate_to: "{{ keystone_galera_address }}"
           when: inventory_hostname == groups['keystone_all'][0]
+          no_log: true
         - name: Grant access to the DB for the service
           mysql_user:
             login_user: "root"
@@ -26,6 +27,7 @@
             - "%"
           delegate_to: "{{ keystone_galera_address }}"
           when: inventory_hostname == groups['keystone_all'][0]
+          no_log: true
       roles:
         - { role: "os_keystone", tags: [ "os-keystone" ] }
       vars:
