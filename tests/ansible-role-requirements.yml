@@ -45,7 +45,7 @@
 - name: os_previous_keystone
   src: https://git.openstack.org/openstack/openstack-ansible-os_keystone
   scm: git
-  version: stable/newton
+  version: newton-eol
 - name: os_tempest
   src: https://git.openstack.org/openstack/openstack-ansible-os_tempest
   scm: git
