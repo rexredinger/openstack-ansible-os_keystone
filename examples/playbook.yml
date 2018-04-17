@@ -41,11 +41,19 @@
         keystone_git_install_branch: master
         keystone_auth_admin_password: "SuperSecretePassword"
         keystone_service_password: "secrete"
-        keystone_rabbitmq_password: "secrete"
+        keystone_oslomsg_rpc_password: "secrete"
+        keystone_oslomsg_notify_password: "secrete"
         keystone_container_mysql_password: "SuperSecrete"
-        keystone_rabbitmq_port: 5671
-        keystone_rabbitmq_userid: keystone
-        keystone_rabbitmq_vhost: /keystone
-        keystone_rabbitmq_servers: 10.100.100.101
-        keystone_rabbitmq_use_ssl: true
+        keystone_oslomsg_rpc_transport: rabbit
+        keystone_oslomsg_rpc_servers: 10.100.100.101
+        keystone_oslomsg_rpc_port: 5671
+        keystone_oslomsg_rpc_use_ssl: true
+        keystone_oslomsg_rpc_userid: keystone
+        keystone_oslomsg_rpc_vhost: /keystone
+        keystone_oslomsg_notify_transport: rabbit
+        keystone_oslomsg_notify_servers: 10.100.100.101
+        keystone_oslomsg_notify_port: 5671
+        keystone_oslomsg_notify_use_ssl: true
+        keystone_oslomsg_notify_userid: keystone
+        keystone_oslomsg_notify_vhost: /keystone
         galera_client_drop_config_file: false
