@@ -24,6 +24,7 @@
     sp_url: "{{ item.sp_url }}"
     sp_auth_url: "{{ item.auth_url }}"
   with_items: "{{ keystone_idp.service_providers | default([]) }}"
+  no_log: true
   register: add_service_providers
   until: add_service_providers|success
   retries: 5
