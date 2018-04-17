@@ -24,6 +24,7 @@
     endpoint: "{{ keystone_service_adminurl }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   with_dict: "{{ keystone_ldap }}"
+  no_log: true
   run_once: true
 
 - name: Create Keystone LDAP domain configs

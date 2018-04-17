@@ -32,6 +32,7 @@
     endpoint: "{{ keystone_service_adminurl }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   when: item.domain is defined
+  no_log: true
   with_items: "{{ keystone_federated_identities | default([]) }}"
 
 - name: Ensure project which remote IDP users are mapped onto exists
@@ -45,6 +46,7 @@
     endpoint: "{{ keystone_service_adminurl }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   when: item.project is defined
+  no_log: true
   with_items: "{{ keystone_federated_identities | default([]) }}"
 
 - name: Ensure user which remote IDP users are mapped onto exists
@@ -63,6 +65,7 @@
     item.user is defined and
     item.password is defined and
     item.project is defined
+  no_log: true
   with_items: "{{ keystone_federated_identities | default([]) }}"
 
 - name: Ensure Group for external IDP users exists
@@ -76,6 +79,7 @@
     endpoint: "{{ keystone_service_adminurl }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   when: item.group is defined
+  no_log: true
   with_items: "{{ keystone_federated_identities | default([]) }}"
 
 - name: Ensure Role for external IDP users exists
@@ -90,6 +94,7 @@
   when: >
     item.group is defined and
     item.project is defined
+  no_log: true
   with_items: "{{ keystone_federated_identities | default([]) }}"
 
 - name: Ensure Group/Project/Role mapping exists
@@ -106,6 +111,7 @@
   when: >
     item.group is defined and
     item.project is defined
+  no_log: true
   with_items: "{{ keystone_federated_identities | default([]) }}"
 
 - name: Ensure mapping for external IDP attributes exists
@@ -119,6 +125,7 @@
     endpoint: "{{ keystone_service_adminurl }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   when: item.protocol.mapping.name is defined
+  no_log: true
   with_items: "{{ keystone_federated_protocols | default([]) }}"
 
 - name: Ensure external IDP
@@ -133,6 +140,7 @@
     endpoint: "{{ keystone_service_adminurl }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   when: item.name is defined
+  no_log: true
   with_items: "{{ keystone_sp.trusted_idp_list | default([]) }}"
 
 - name: Ensure federation protocol exists
@@ -147,4 +155,5 @@
     endpoint: "{{ keystone_service_adminurl }}"
     insecure: "{{ keystone_service_adminuri_insecure }}"
   when: item.protocol.name is defined
+  no_log: true
   with_items: "{{ keystone_federated_protocols | default([]) }}"
