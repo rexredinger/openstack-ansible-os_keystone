@@ -38,6 +38,7 @@
         login_user: "{{ keystone_admin_user_name }}"
         login_password: "{{ keystone_auth_admin_password }}"
         login_project_name: "{{ keystone_admin_tenant_name }}"
+      no_log: true
       with_items:
         - "admin"
         - "keystone"
@@ -49,6 +50,7 @@
         login_user: "{{ keystone_admin_user_name }}"
         login_password: "{{ keystone_auth_admin_password }}"
         login_project_name: "{{ keystone_admin_tenant_name }}"
+      no_log: true
       with_items:
         - "admin"
         - "service"

@@ -38,6 +38,7 @@
      --bootstrap-admin-url {{ keystone_service_adminuri }} \
      --bootstrap-public-url {{ keystone_service_publicuri }} \
      --bootstrap-internal-url {{ keystone_service_internaluri }}
+  no_log: true
   become: yes
   become_user: "{{ keystone_system_user_name }}"
   changed_when: false
@@ -57,6 +58,7 @@
     ignore_catalog: True
     tenant_name: "{{ keystone_service_tenant_name }}"
     description: "{{ keystone_service_description }}"
+  no_log: true
   register: add_service
   until: add_service|success
   retries: 5
@@ -72,6 +74,7 @@
     endpoint: "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}/v3"
     ignore_catalog: True
     role_name: "{{ keystone_default_role_name }}"
+  no_log: true
   register: add_member_role
   when: not keystone_service_in_ldap | bool
   until: add_member_role|success
@@ -90,6 +93,7 @@
     service_name: "{{ keystone_service_name }}"
     service_type: "{{ keystone_service_type }}"
     description: "{{ keystone_service_description }}"
+  no_log: true
   register: add_service
   until: add_service|success
   retries: 5
@@ -107,6 +111,7 @@
     user_name: "{{ keystone_service_user_name }}"
     tenant_name: "{{ keystone_service_tenant_name }}"
     password: "{{ keystone_service_password }}"
+  no_log: true
   register: add_service
   until: add_service|success
   retries: 5
@@ -124,6 +129,7 @@
     user_name: "{{ keystone_service_user_name }}"
     tenant_name: "{{ keystone_service_tenant_name }}"
     role_name: "{{ keystone_role_name }}"
+  no_log: true
   register: add_service
   until: add_service|success
   retries: 5
@@ -148,6 +154,7 @@
         interface: "internal"
       - url: "{{ keystone_service_adminuri }}"
         interface: "admin"
+  no_log: true
   register: add_service
   until: add_service|success
   retries: 5
