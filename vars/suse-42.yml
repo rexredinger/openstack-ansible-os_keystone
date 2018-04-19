@@ -26,6 +26,7 @@ keystone_distro_packages:
   - openldap2-devel
   - openssl
   - python-devel
+  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
   - rsync
   - which
 
