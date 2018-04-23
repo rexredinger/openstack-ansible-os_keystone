@@ -74,6 +74,7 @@
     - "{{ ansible_play_hosts }}"
     - - { path: "/openstack", mode: "0755", owner: "root", group: "root" }
       - { path: "/etc/keystone", mode: "0750" }
+      - { path: "{{ keystone_credential_key_repository }}", mode: "0750" }
       - { path: "{{ keystone_ldap_domain_config_dir }}", mode: "0750" }
       - { path: "/etc/keystone/ssl" }
       - { path: "{{ keystone_fernet_tokens_key_repository }}", mode: "2750"}
