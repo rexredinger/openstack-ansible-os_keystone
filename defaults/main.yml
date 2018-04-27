@@ -468,11 +468,11 @@ keystone_services:
   keystone-wsgi-public:
     service_name: "keystone-wsgi-public"
     init_config_overrides: "{{ keystone_uwsgi_init_overrides }}"
-    execstarts: "{{ keystone_bin }}/uwsgi --ini /etc/uwsgi/keystone-wsgi-public.ini"
+    execstarts: "{{ keystone_bin }}/uwsgi --autoload --ini /etc/uwsgi/keystone-wsgi-public.ini"
   keystone-wsgi-admin:
     service_name: "keystone-wsgi-admin"
     init_config_overrides: "{{ keystone_uwsgi_init_overrides }}"
-    execstarts: "{{ keystone_bin }}/uwsgi --ini /etc/uwsgi/keystone-wsgi-admin.ini"
+    execstarts: "{{ keystone_bin }}/uwsgi --autoload --ini /etc/uwsgi/keystone-wsgi-admin.ini"
 
 ## Extra HTTP headers for Keystone
 # Add any additional headers here that Keystone should return.
