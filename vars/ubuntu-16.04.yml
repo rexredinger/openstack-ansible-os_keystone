@@ -25,6 +25,7 @@ keystone_distro_packages:
   - libxslt1-dev
   - libxml2-dev
   - python-dev
+  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
   - rsync
 
 keystone_apache_distro_packages:
