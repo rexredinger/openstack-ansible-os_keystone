@@ -13,6 +13,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+- name: Create DB for service
+  mysql_db:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+    login_host: "{{ keystone_galera_address }}"
+    name: "{{ keystone_galera_database }}"
+    state: "present"
+  delegate_to: "{{ keystone_db_setup_host }}"
+  no_log: True
+
+- name: Grant access to the DB for the service
+  mysql_user:
+    login_user: "{{ galera_root_user }}"
+    login_password: "{{ galera_root_password }}"
+    login_host: "{{ keystone_galera_address }}"
+    name: "{{ keystone_galera_user }}"
+    password: "{{ keystone_container_mysql_password }}"
+    host: "{{ item }}"
+    state: "present"
+    priv: "{{ keystone_galera_database }}.*:ALL"
+  delegate_to: "{{ keystone_db_setup_host }}"
+  with_items:
+    - "localhost"
+    - "%"
+  no_log: True
+
 - name: Check current state of Keystone DB
   command: "{{ keystone_bin }}/keystone-manage db_sync --check"
   become: yes
