@@ -34,6 +34,7 @@ keystone_package_list: |-
   {% if keystone_developer_mode | bool %}
   {%   set _ = packages.extend(keystone_developer_mode_distro_packages) %}
   {% endif %}
+  {% set _ = packages.extend(keystone_devel_distro_packages) %}
   {{ packages }}
 
 _keystone_bin: "/openstack/venvs/keystone-{{ keystone_venv_tag }}/bin"

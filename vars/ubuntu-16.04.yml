@@ -14,8 +14,12 @@
 # limitations under the License.
 
 keystone_distro_packages:
-  - docutils-common
   - git
+  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
+  - rsync
+
+keystone_devel_distro_packages:
+  - docutils-common
   - libffi-dev
   - libjs-sphinxdoc
   - libjs-underscore
@@ -25,8 +29,6 @@ keystone_distro_packages:
   - libxslt1-dev
   - libxml2-dev
   - python-dev
-  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
-  - rsync
 
 keystone_service_distro_packages:
   - keystone
