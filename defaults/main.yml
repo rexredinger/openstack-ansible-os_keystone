@@ -106,23 +106,24 @@ keystone_database_min_pool_size: 5
 keystone_database_max_pool_size: 120
 keystone_database_pool_timeout: 30
 
-## RabbitMQ info
-
-## Configuration for RPC communications
+## Oslo Messaging
 keystone_messaging_enabled: true
-keystone_rabbitmq_port: 5671
-keystone_rabbitmq_userid: keystone
-keystone_rabbitmq_vhost: /keystone
-keystone_rabbitmq_servers: localhost
-keystone_rabbitmq_use_ssl: false
 
-## Configuration for notifications communication, i.e. [oslo_messaging_notifications]
-keystone_rabbitmq_telemetry_userid: "{{ keystone_rabbitmq_userid }}"
-keystone_rabbitmq_telemetry_password: "{{ keystone_rabbitmq_password }}"
-keystone_rabbitmq_telemetry_vhost: "{{ keystone_rabbitmq_vhost }}"
-keystone_rabbitmq_telemetry_port: "{{ keystone_rabbitmq_port }}"
-keystone_rabbitmq_telemetry_servers: "{{ keystone_rabbitmq_servers }}"
-keystone_rabbitmq_telemetry_use_ssl: "{{ keystone_rabbitmq_use_ssl }}"
+# RPC
+keystone_oslomsg_rpc_transport: rabbit
+keystone_oslomsg_rpc_servers: 127.0.0.1
+keystone_oslomsg_rpc_port: 5672
+keystone_oslomsg_rpc_use_ssl: False
+keystone_oslomsg_rpc_userid: keystone
+keystone_oslomsg_rpc_vhost: /keystone
+
+# Notify
+keystone_oslomsg_notify_transport: rabbit
+keystone_oslomsg_notify_servers: 127.0.0.1
+keystone_oslomsg_notify_port: 5672
+keystone_oslomsg_notify_use_ssl: False
+keystone_oslomsg_notify_userid: keystone
+keystone_oslomsg_notify_vhost: /keystone
 
 ## Role info
 keystone_role_name: admin
@@ -460,6 +461,8 @@ keystone_policy_overrides: {}
 keystone_required_secrets:
   - keystone_auth_admin_password
   - keystone_container_mysql_password
+  - keystone_oslomsg_rpc_password
+  - keystone_oslomsg_notify_password
   - keystone_rabbitmq_password
   - keystone_service_password
 
