@@ -17,17 +17,17 @@ keystone_distro_packages:
   - ca-certificates
   - cronie
   - cronie-anacron
-  - cyrus-sasl-lib
   - git
+  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
+  - rsync
+
+keystone_devel_distro_packages:
+  - cyrus-sasl-lib
   - libffi-devel
   - libxml2-devel
   - libxslt-devel
-  - openldap
   - openldap-devel
-  - openssl
   - python-devel
-  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
-  - rsync
   - which
 
 keystone_service_distro_packages:
