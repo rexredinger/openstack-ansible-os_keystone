@@ -65,7 +65,7 @@
     group: "{{ keystone_system_group_name }}"
     mode: "0644"
   when:
-    - keystone_idp != {}
+    - keystone_sp != {}
   notify:
     - Restart uWSGI
     - Restart web server
@@ -75,7 +75,7 @@
     path: "/etc/keystone/sso_callback_template.html"
     state: absent
   when:
-    - keystone_idp == {}
+    - keystone_sp == {}
   notify:
     - Restart uWSGI
     - Restart web server
