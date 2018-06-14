@@ -51,6 +51,20 @@
     - ansible_pkg_mgr in ['yum', 'dnf']
     - keystone_sp != {}
 
+- name: Add NGINX repository
+  yum_repository:
+    name: nginx
+    description: 'nginx repo'
+    baseurl: "{{ keystone_nginx_repo }}"
+    gpgkey: "{{ keystone_nginx_gpg_key }}"
+  when:
+    - ansible_pkg_mgr in ['yum', 'dnf']
+    - keystone_web_server == 'nginx'
+  register: add_nginx_repo
+  until: add_nginx_repo is success
+  retries: 5
+  delay: 2
+
 # If the web server being removed was never installed, this task will fail when trying
 # to stop/disable it. The task is therefore set to never fail.
 - name: Ensure other web server is not running/enabled
