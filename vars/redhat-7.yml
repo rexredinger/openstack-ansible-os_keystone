@@ -41,13 +41,6 @@ keystone_apache_distro_packages:
   - mod_ssl
   - mod_proxy_uwsgi
 
-# TODO(odyssey4me):
-# We can remove this in R because we only need this to
-# handle upgrades from O->P in order to remove the
-# package when switching to the new configuration.
-keystone_mod_wsgi_distro_packages:
-  - mod_wsgi
-
 keystone_nginx_repo: http://nginx.org/packages/centos/7/$basearch/
 keystone_nginx_gpg_key: http://nginx.org/keys/nginx_signing.key
 keystone_nginx_distro_packages:

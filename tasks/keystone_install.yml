@@ -77,7 +77,7 @@
 
 - name: Remove other web server distro packages and mod_wsgi
   package:
-    name: "{{ ((keystone_web_server == 'nginx') | ternary(keystone_apache_distro_packages, keystone_nginx_distro_packages)) + keystone_mod_wsgi_distro_packages }}"
+    name: "{{ (keystone_web_server == 'nginx') | ternary(keystone_apache_distro_packages, keystone_nginx_distro_packages) }}"
     state: absent
     autoremove: "{{ (ansible_pkg_mgr == 'apt') | ternary('yes', omit) }}"
 
