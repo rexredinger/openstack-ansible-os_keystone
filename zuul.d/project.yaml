@@ -14,12 +14,10 @@
 # limitations under the License.
 
 - project:
+    templates:
+      - openstack-ansible-role-jobs
     check:
       jobs:
-        - openstack-ansible-linters
-        - openstack-ansible-functional-centos-7
-        - openstack-ansible-functional-opensuse-423
-        - openstack-ansible-functional-ubuntu-xenial
         - openstack-ansible-upgrade-ubuntu-xenial
         - openstack-ansible-uw_apache-centos-7-nv
         - openstack-ansible-uw_apache-ubuntu-xenial
@@ -30,14 +28,7 @@
         - openstack-ansible-functional-distro_install-centos-7:
             voting: false
         - openstack-ansible-functional-distro_install-opensuse-423
-    experimental:
-      jobs:
-        - openstack-ansible-integrated-deploy-aio
     gate:
       jobs:
-        - openstack-ansible-linters
-        - openstack-ansible-functional-centos-7
-        - openstack-ansible-functional-opensuse-423
-        - openstack-ansible-functional-ubuntu-xenial
         - openstack-ansible-upgrade-ubuntu-xenial
         - openstack-ansible-uw_apache-ubuntu-xenial
