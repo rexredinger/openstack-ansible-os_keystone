@@ -40,7 +40,7 @@
     systemd_group_name: "{{ keystone_system_group_name }}"
     systemd_tempd_prefix: openstack
     systemd_slice_name: keystone
-    system_lock_path: /var/lock/keystone
+    systemd_lock_path: /var/lock/keystone
     systemd_CPUAccounting: true
     systemd_BlockIOAccounting: true
     systemd_MemoryAccounting: true
