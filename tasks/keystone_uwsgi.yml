@@ -56,3 +56,4 @@
     loop_var: service_var
   tags:
     - keystone-config
+    - systemd-service
