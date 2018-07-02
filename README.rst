@@ -12,8 +12,7 @@ OpenStack-Ansible keystone
 ==========================
 
 Ansible role that installs and configures OpenStack Keystone. Keystone is
-installed behind the Apache webserver listening on port 5000 and port 35357 by
-default.
+installed behind the Apache webserver listening on port 5000 by default.
 
 Documentation for the project can be found at:
 `<https://docs.openstack.org/openstack-ansible-os_keystone/latest/>`_
