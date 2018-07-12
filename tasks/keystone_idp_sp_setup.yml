@@ -26,6 +26,6 @@
   with_items: "{{ keystone_idp.service_providers | default([]) }}"
   no_log: true
   register: add_service_providers
-  until: add_service_providers|success
+  until: add_service_providers is success
   retries: 5
   delay: 10

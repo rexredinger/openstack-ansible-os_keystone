@@ -22,7 +22,7 @@
     - "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}"
     - "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-public']['http'] }}"
   register: _wait_check
-  until: _wait_check | success
+  until: _wait_check  is success
   retries: 12
   delay: 5
 
@@ -43,7 +43,7 @@
   become_user: "{{ keystone_system_user_name }}"
   changed_when: false
   register: add_service
-  until: add_service|success
+  until: add_service is success
   retries: 5
   delay: 10
 
@@ -60,7 +60,7 @@
     description: "{{ keystone_service_description }}"
   no_log: true
   register: add_service
-  until: add_service|success
+  until: add_service is success
   retries: 5
   delay: 10
 
@@ -77,7 +77,7 @@
   no_log: true
   register: add_member_role
   when: not keystone_service_in_ldap | bool
-  until: add_member_role|success
+  until: add_member_role is success
   retries: 5
   delay: 10
 
@@ -95,7 +95,7 @@
     description: "{{ keystone_service_description }}"
   no_log: true
   register: add_service
-  until: add_service|success
+  until: add_service is success
   retries: 5
   delay: 10
 
@@ -113,7 +113,7 @@
     password: "{{ keystone_service_password }}"
   no_log: true
   register: add_service
-  until: add_service|success
+  until: add_service is success
   retries: 5
   delay: 10
 
@@ -131,7 +131,7 @@
     role_name: "{{ keystone_role_name }}"
   no_log: true
   register: add_service
-  until: add_service|success
+  until: add_service is success
   retries: 5
   delay: 10
 
@@ -156,6 +156,6 @@
         interface: "admin"
   no_log: true
   register: add_service
-  until: add_service|success
+  until: add_service is success
   retries: 5
   delay: 10

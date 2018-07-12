@@ -26,7 +26,7 @@
     - { src: "{{ keystone_idp.certfile }}", name: "keystone_idp_cert", file_mode: "0640", dir_mode: "0750" }
     - { src: "{{ keystone_idp.keyfile }}", name: "keystone_idp_key", file_mode: "0640", dir_mode: "0750" }
   register: memcache_keys
-  until: memcache_keys|success
+  until: memcache_keys is success
   retries: 5
   delay: 2
   notify:

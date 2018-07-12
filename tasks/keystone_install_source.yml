@@ -31,7 +31,7 @@
       {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
       {{ pip_install_options | default('') }}
   register: install_packages
-  until: install_packages|success
+  until: install_packages is success
   retries: 5
   delay: 2
 
@@ -54,21 +54,21 @@
   file:
     path: "{{ keystone_bin | dirname }}"
     state: absent
-  when: keystone_get_venv | changed
+  when: keystone_get_venv  is changed
 
 - name: Create keystone venv dir
   file:
     path: "{{ keystone_bin | dirname }}"
     state: directory
   register: keystone_venv_dir
-  when: keystone_get_venv | changed
+  when: keystone_get_venv  is changed
 
 - name: Unarchive pre-built venv
   unarchive:
     src: "/var/cache/{{ keystone_venv_download_url | basename }}"
     dest: "{{ keystone_bin | dirname }}"
     copy: "no"
-  when: keystone_get_venv | changed
+  when: keystone_get_venv  is changed
   notify:
     - Manage LB
     - Restart uWSGI
@@ -85,7 +85,7 @@
       {{ (pip_install_upper_constraints is defined) | ternary('--constraint ' + pip_install_upper_constraints | default(''),'') }}
       {{ pip_install_options | default('') }}
   register: install_packages
-  until: install_packages|success
+  until: install_packages is success
   retries: 5
   delay: 2
   when: keystone_get_venv | failed or keystone_get_venv | skipped
@@ -100,7 +100,7 @@
     state: "absent"
   when:
     - ansible_pkg_mgr in ['yum', 'dnf', 'zypper']
-    - keystone_get_venv | changed
+    - keystone_get_venv  is changed
 
 # NOTE(odyssey4me):
 # # We reinitialize the venv to ensure that the right
@@ -118,7 +118,7 @@
         --no-pip \
         --no-setuptools \
         --no-wheel
-  when: keystone_get_venv | changed
+  when: keystone_get_venv  is changed
   tags:
     - skip_ansible_lint
 
