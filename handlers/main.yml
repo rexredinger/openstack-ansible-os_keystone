@@ -20,7 +20,7 @@
     state: restarted
     daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
   register: _restart
-  until: _restart  is success
+  until: _restart is success
   retries: 5
   delay: 2
 
@@ -33,7 +33,7 @@
     - "{{ keystone_service_port }}"
     - "{{ keystone_admin_port }}"
   register: _wait_check
-  until: _wait_check  is success
+  until: _wait_check is success
   retries: 5
   listen: "Restart web server"
 
@@ -43,7 +43,7 @@
     state: "stopped"
     daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
   register: _stop
-  until: _stop  is success
+  until: _stop is success
   retries: 5
   delay: 2
   with_items: "{{ keystone_services.keys() | list }}"
@@ -82,7 +82,7 @@
     state: "started"
     daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
   register: _start
-  until: _start  is success
+  until: _start is success
   retries: 5
   delay: 2
   with_items: "{{ keystone_services.keys() | list }}"
@@ -97,7 +97,7 @@
     - "{{ keystone_uwsgi_ports['keystone-wsgi-admin']['socket'] }}"
     - "{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}"
   register: _wait_check
-  until: _wait_check  is success
+  until: _wait_check is success
   retries: 5
   listen: "Restart uWSGI"
 
@@ -108,7 +108,7 @@
     state: "restarted"
     daemon_reload: "{{ (ansible_service_mgr == 'systemd') | ternary('yes', omit) }}"
   register: _restart
-  until: _restart  is success
+  until: _restart is success
   retries: 5
   delay: 2
 

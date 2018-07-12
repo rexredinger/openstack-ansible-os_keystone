@@ -83,7 +83,7 @@
     name: "{{ item.name }}"
     state: stopped
   register: _stop
-  until: _stop  is success
+  until: _stop is success
   retries: 5
   delay: 2
   with_items: "{{ keystone_service_exists.results }}"
