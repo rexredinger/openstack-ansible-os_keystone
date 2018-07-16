@@ -130,10 +130,17 @@
 - name: Flush handlers
   meta: flush_handlers
 
-- include_tasks: keystone_service_setup.yml
+- include_tasks: keystone_service_bootstrap.yml
   when:
-    - keystone_service_setup | bool
-  run_once: yes
+    - "inventory_hostname == ((groups['keystone_all'] | intersect(ansible_play_hosts)) | list)[0]"
+    - "keystone_service_setup | bool"
+  tags:
+    - keystone-config
+
+- include_tasks: keystone_service_update.yml
+  when:
+    - "inventory_hostname == ((groups['keystone_all'] | intersect(ansible_play_hosts)) | list)[-1]"
+    - "keystone_service_setup | bool"
   tags:
     - keystone-config
 

@@ -16,6 +16,11 @@
 ## Verbosity Options
 debug: False
 
+# Set the host which will execute the shade modules
+# for the service setup. The host must already have
+# clouds.yaml properly configured.
+keystone_service_setup_host: "{{ openstack_service_setup_host | default('localhost') }}"
+
 # Set the package install state for distribution and pip packages
 # Options are 'present' and 'latest'
 keystone_package_state: "latest"
@@ -414,10 +419,6 @@ keystone_service_in_ldap: false
 
 # Keystone notification settings
 keystone_ceilometer_enabled: false
-
-# Keystone packages that must be installed before anything else
-keystone_requires_pip_packages:
-  - virtualenv
 
 # Common pip packages
 keystone_pip_packages:
