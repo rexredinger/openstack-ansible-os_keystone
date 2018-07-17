@@ -424,7 +424,6 @@ keystone_ceilometer_enabled: false
 keystone_pip_packages:
   - keystone
   - ldappool
-  - pyldap
   - PyMySQL
   - python-memcached
   - python-openstackclient
