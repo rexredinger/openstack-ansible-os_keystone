@@ -102,6 +102,25 @@
   tags:
     - keystone-config
 
+- include_tasks: mq_setup.yml
+  when:
+    - "keystone_services['keystone-api']['group'] in group_names"
+    - "inventory_hostname == ((groups[keystone_services['keystone-api']['group']]| intersect(ansible_play_hosts)) | list)[0]"
+  with_items:
+    - oslomsg_setup_host: "{{ keystone_oslomsg_rpc_setup_host }}"
+      oslomsg_userid: "{{ keystone_oslomsg_rpc_userid }}"
+      oslomsg_password: "{{ keystone_oslomsg_rpc_password }}"
+      oslomsg_vhost: "{{ keystone_oslomsg_rpc_vhost }}"
+      oslomsg_transport: "{{ keystone_oslomsg_rpc_transport }}"
+    - oslomsg_setup_host: "{{ keystone_oslomsg_notify_setup_host }}"
+      oslomsg_userid: "{{ keystone_oslomsg_notify_userid }}"
+      oslomsg_password: "{{ keystone_oslomsg_notify_password }}"
+      oslomsg_vhost: "{{ keystone_oslomsg_notify_vhost }}"
+      oslomsg_transport: "{{ keystone_oslomsg_notify_transport }}"
+  no_log: true
+  tags:
+    - keystone-config
+
 - include_tasks: keystone_db_setup.yml
   when:
     - "keystone_database_enabled | bool"
