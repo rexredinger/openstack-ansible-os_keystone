@@ -31,6 +31,9 @@ keystone_package_list: |-
   {% else %}
   {%   set _ = packages.extend(keystone_nginx_distro_packages) %}
   {% endif %}
+  {% if keystone_oslomsg_amqp1_enabled | bool %}
+  {%   set _ = packages.extend(keystone_oslomsg_amqp1_distro_packages) %}
+  {% endif %}
   {% set _ = packages.extend(keystone_service_distro_packages) %}
   {{ packages }}
 

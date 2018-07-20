@@ -148,6 +148,10 @@ keystone_oslomsg_notify_userid: "{{ keystone_oslomsg_rpc_userid }}"
 keystone_oslomsg_notify_password: "{{ keystone_oslomsg_rpc_password }}"
 keystone_oslomsg_notify_vhost: "{{ keystone_oslomsg_rpc_vhost }}"
 
+## (Qdrouterd) info
+# TODO(ansmith): Change structure when more backends will be supported
+keystone_oslomsg_amqp1_enabled: "{{ keystone_oslomsg_rpc_transport == 'amqp' }}"
+
 ## Role info
 keystone_role_name: admin
 keystone_default_role_name: _member_
@@ -446,6 +450,11 @@ keystone_pip_packages:
   - python-openstackclient
   - systemd-python
   - uWSGI
+  - pyngus
+
+# optional pip packages
+keystone_optional_oslomsg_amqp1_pip_packages:
+  - oslo.messaging[amqp1]
 
 # This variable is used by the repo_build process to determine
 # which host group to check for members of before building the

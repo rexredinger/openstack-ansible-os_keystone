@@ -57,6 +57,11 @@ keystone_sp_distro_packages:
 keystone_developer_mode_distro_packages:
   - patterns-openSUSE-devel_basis
 
+keystone_oslomsg_amqp1_distro_packages:
+  - cyrus-sasl
+  - cyrus-sasl-plain
+  - cyrus-sasl-digestmd5
+
 keystone_apache_default_sites:
   - "/etc/apache2/conf.d/gitweb.conf"
 
