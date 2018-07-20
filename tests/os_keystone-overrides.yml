@@ -54,13 +54,6 @@ haproxy_default_services:
       haproxy_balance_type: "http"
       haproxy_backend_options:
         - "httpchk HEAD /"
-  - service:
-      haproxy_service_name: keystone_admin
-      haproxy_backend_nodes: "{{ groups['keystone_all'] | default([])  }}"
-      haproxy_port: 35357
-      haproxy_balance_type: "http"
-      haproxy_backend_options:
-        - "httpchk HEAD /"
 
 ssl_cipher_suite: "ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS"
 haproxy_ssl: false
