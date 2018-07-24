@@ -28,10 +28,13 @@ keystone_devel_distro_packages:
   - libxslt-devel
   - openldap-devel
   - python-devel
+  - systemd-devel
   - which
 
 keystone_service_distro_packages:
   - openstack-keystone
+  - python-systemd
+  - python3-systemd
   - uwsgi
   - uwsgi-plugin-python
 

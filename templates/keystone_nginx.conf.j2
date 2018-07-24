@@ -19,8 +19,8 @@ server {
     {{ line }}
     {%- endfor %}
 
-    access_log  /var/log/nginx/{{ item }}-access.log custom;
-    error_log   /var/log/nginx/{{ item }}-error.log info;
+    error_log   syslog:server=unix:/dev/log;
+    access_log  syslog:server=unix:/dev/log;
 
     add_header X-Content-Type-Options nosniff;
     add_header X-XSS-Protection "1; mode=block";
