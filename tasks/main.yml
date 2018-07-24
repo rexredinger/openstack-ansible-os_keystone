@@ -103,9 +103,7 @@
     - keystone-config
 
 - include_tasks: mq_setup.yml
-  when:
-    - "keystone_services['keystone-api']['group'] in group_names"
-    - "inventory_hostname == ((groups[keystone_services['keystone-api']['group']]| intersect(ansible_play_hosts)) | list)[0]"
+  run_once: yes
   with_items:
     - oslomsg_setup_host: "{{ keystone_oslomsg_rpc_setup_host }}"
       oslomsg_userid: "{{ keystone_oslomsg_rpc_userid }}"
