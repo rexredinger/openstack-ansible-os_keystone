@@ -84,24 +84,3 @@
       - { path: "/etc/ansible/facts.d", owner: root, group: root }
   delegate_to: "{{ item[0] }}"
   when: "inventory_hostname == ansible_play_hosts[0]"
-
-- name: Test for log directory or link
-  shell: |
-    if [ -h "/var/log/keystone"  ]; then
-      chown -h {{ keystone_system_user_name }}:{{ keystone_system_group_name }} "/var/log/keystone"
-      chown -R {{ keystone_system_user_name }}:{{ keystone_system_group_name }} "$(readlink /var/log/keystone)"
-    else
-      exit 1
-    fi
-  register: log_dir
-  failed_when: false
-  changed_when: log_dir.rc != 0
-
-- name: Create keystone log dir
-  file:
-    path: "/var/log/keystone"
-    state: directory
-    owner: "{{ keystone_system_user_name }}"
-    group: "{{ keystone_system_group_name }}"
-    mode: "0755"
-  when: log_dir.rc != 0

@@ -432,6 +432,7 @@ keystone_pip_packages:
   - PyMySQL
   - python-memcached
   - python-openstackclient
+  - systemd-python
   - uWSGI
 
 # This variable is used by the repo_build process to determine
