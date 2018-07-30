@@ -133,8 +133,9 @@ keystone_oslomsg_notify_transport: "{{ oslomsg_notify_transport | default('rabbi
 keystone_oslomsg_notify_servers: "{{ oslomsg_notify_servers | default('127.0.0.1') }}"
 keystone_oslomsg_notify_port: "{{ oslomsg_notify_port | default('5672') }}"
 keystone_oslomsg_notify_use_ssl: "{{ oslomsg_notify_use_ssl | default(False) }}"
-keystone_oslomsg_notify_userid: keystone
-keystone_oslomsg_notify_vhost: /keystone
+keystone_oslomsg_notify_userid: "{{ keystone_oslomsg_rpc_userid }}"
+keystone_oslomsg_notify_password: "{{ keystone_oslomsg_rpc_password }}"
+keystone_oslomsg_notify_vhost: "{{ keystone_oslomsg_rpc_vhost }}"
 
 ## Role info
 keystone_role_name: admin
