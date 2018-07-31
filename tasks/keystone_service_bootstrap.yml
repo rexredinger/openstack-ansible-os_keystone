@@ -13,14 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Wait for services to be up
+- name: Wait for service to be up
   uri:
-    url: "{{ item }}"
+    url: "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-public']['http'] }}"
     method: "HEAD"
     status_code: 300
-  with_items:
-    - "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-admin']['http'] }}"
-    - "http://{{ ansible_host }}:{{ keystone_uwsgi_ports['keystone-wsgi-public']['http'] }}"
   register: _wait_check
   until: _wait_check  is success
   retries: 12
