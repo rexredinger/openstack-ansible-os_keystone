@@ -18,7 +18,6 @@ keystone_distro_packages:
   - cronie
   - cronie-anacron
   - git
-  - python-keystoneclient # Keystoneclient needed to OSA keystone lib
   - rsync
 
 keystone_devel_distro_packages:
