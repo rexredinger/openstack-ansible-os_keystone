@@ -102,21 +102,23 @@
   tags:
     - keystone-config
 
-- include_tasks: mq_setup.yml
+- import_tasks: mq_setup.yml
   run_once: yes
-  with_items:
-    - oslomsg_setup_host: "{{ keystone_oslomsg_rpc_setup_host }}"
-      oslomsg_userid: "{{ keystone_oslomsg_rpc_userid }}"
-      oslomsg_password: "{{ keystone_oslomsg_rpc_password }}"
-      oslomsg_vhost: "{{ keystone_oslomsg_rpc_vhost }}"
-      oslomsg_transport: "{{ keystone_oslomsg_rpc_transport }}"
-    - oslomsg_setup_host: "{{ keystone_oslomsg_notify_setup_host }}"
-      oslomsg_userid: "{{ keystone_oslomsg_notify_userid }}"
-      oslomsg_password: "{{ keystone_oslomsg_notify_password }}"
-      oslomsg_vhost: "{{ keystone_oslomsg_notify_vhost }}"
-      oslomsg_transport: "{{ keystone_oslomsg_notify_transport }}"
-  no_log: true
+  vars:
+    _oslomsg_rpc_setup_host: "{{ keystone_oslomsg_rpc_setup_host }}"
+    _oslomsg_rpc_userid: "{{ keystone_oslomsg_rpc_userid }}"
+    _oslomsg_rpc_password: "{{ keystone_oslomsg_rpc_password }}"
+    _oslomsg_rpc_vhost: "{{ keystone_oslomsg_rpc_vhost }}"
+    _oslomsg_rpc_transport: "{{ keystone_oslomsg_rpc_transport }}"
+    _oslomsg_configure_rpc: "{{ keystone_messaging_enabled | bool }}"
+    _oslomsg_notify_setup_host: "{{ keystone_oslomsg_notify_setup_host }}"
+    _oslomsg_notify_userid: "{{ keystone_oslomsg_notify_userid }}"
+    _oslomsg_notify_password: "{{ keystone_oslomsg_notify_password }}"
+    _oslomsg_notify_vhost: "{{ keystone_oslomsg_notify_vhost }}"
+    _oslomsg_notify_transport: "{{ keystone_oslomsg_notify_transport }}"
+    _oslomsg_configure_notify: "{{ keystone_ceilometer_enabled | bool }}"
   tags:
+    - common-mq
     - keystone-config
 
 - include_tasks: keystone_db_setup.yml
