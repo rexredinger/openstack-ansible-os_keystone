@@ -18,7 +18,6 @@
         - openstack-ansible-linters
         - openstack-ansible-functional-centos-7-nv
         - openstack-ansible-functional-ubuntu-xenial
-        - openstack-ansible-upgrade-ubuntu-xenial
         - openstack-ansible-uw_apache-centos-7-nv
         - openstack-ansible-uw_apache-ubuntu-xenial
         - openstack-ansible-uw_nginx-centos-7-nv
@@ -27,6 +26,5 @@
       jobs:
         - openstack-ansible-linters
         - openstack-ansible-functional-ubuntu-xenial
-        - openstack-ansible-upgrade-ubuntu-xenial
         - openstack-ansible-uw_apache-ubuntu-xenial
         - openstack-ansible-uw_nginx-ubuntu-xenial
