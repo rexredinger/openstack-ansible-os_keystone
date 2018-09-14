@@ -157,7 +157,6 @@ keystone_role_name: admin
 keystone_default_role_name: _member_
 
 ## Admin info
-keystone_admin_port: 35357
 keystone_admin_user_name: admin
 keystone_admin_tenant_name: admin
 keystone_admin_description: Admin Tenant
@@ -182,7 +181,7 @@ keystone_service_adminuri_insecure: false
 
 keystone_service_publicuri: "{{ keystone_service_publicuri_proto }}://{{ external_lb_vip_address }}:{{ keystone_service_port }}"
 keystone_service_internaluri: "{{ keystone_service_internaluri_proto }}://{{ internal_lb_vip_address }}:{{ keystone_service_port }}"
-keystone_service_adminuri: "{{ keystone_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ keystone_admin_port }}"
+keystone_service_adminuri: "{{ keystone_service_adminuri_proto }}://{{ internal_lb_vip_address }}:{{ keystone_service_port }}"
 
 ## Set this value to override the "public_endpoint" keystone.conf variable
 #keystone_public_endpoint: "{{ keystone_service_publicuri }}"
@@ -223,7 +222,6 @@ keystone_nginx_access_log_format_combined: '$remote_addr - $remote_user [$time_l
 keystone_nginx_access_log_format_extras: '$request_time $upstream_response_time'
 keystone_nginx_ports:
   keystone-wsgi-public: "{{ keystone_service_port }}"
-  keystone-wsgi-admin: "{{ keystone_admin_port }}"
 keystone_nginx_extra_conf:
   - keepalive_timeout   70;
 
@@ -237,9 +235,6 @@ keystone_uwsgi_ports:
   keystone-wsgi-public:
     http: 37358
     socket: 35358
-  keystone-wsgi-admin:
-    http: 37359
-    socket: 5001
 
 keystone_uwsgi_ini_overrides: {}
 
@@ -503,10 +498,6 @@ keystone_services:
     service_name: "keystone-wsgi-public"
     init_config_overrides: "{{ keystone_uwsgi_init_overrides }}"
     execstarts: "{{ keystone_uwsgi_bin }}/uwsgi --autoload --ini /etc/uwsgi/keystone-wsgi-public.ini"
-  keystone-wsgi-admin:
-    service_name: "keystone-wsgi-admin"
-    init_config_overrides: "{{ keystone_uwsgi_init_overrides }}"
-    execstarts: "{{ keystone_uwsgi_bin }}/uwsgi --autoload --ini /etc/uwsgi/keystone-wsgi-admin.ini"
 
 ## Extra HTTP headers for Keystone
 # Add any additional headers here that Keystone should return.
