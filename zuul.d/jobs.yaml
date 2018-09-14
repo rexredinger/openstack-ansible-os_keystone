@@ -25,14 +25,6 @@
     nodeset: ubuntu-xenial
 
 - job:
-    name: openstack-ansible-uw_apache-centos-7-nv
+    name: openstack-ansible-uw_apache-centos-7
     parent: openstack-ansible-uw_apache
-    voting: false
     nodeset: centos-7
-
-- job:
-    name: openstack-ansible-keystone-ssl-nv
-    parent: openstack-ansible-functional-ubuntu-xenial
-    voting: false
-    vars:
-      tox_env: ssl
