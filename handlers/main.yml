@@ -31,7 +31,6 @@
     delay: 10
   with_items:
     - "{{ keystone_service_port }}"
-    - "{{ keystone_admin_port }}"
   register: _wait_check
   until: _wait_check is success
   retries: 5
@@ -47,6 +46,46 @@
   retries: 5
   delay: 2
   with_items: "{{ keystone_services.keys() | list }}"
+  listen: "Restart uWSGI"
+
+# NOTE(mnaser): This should be removed in the Stein cycle
+- name: Stop and disable keystone-wsgi-admin
+  shell: |
+    return_code=0
+    if [[ "$(systemctl is-active keystone-wsgi-admin)" == "active" ]]; then
+      systemctl stop keystone-wsgi-admin
+      return_code=2
+    fi
+    if [[ "$(systemctl is-enabled keystone-wsgi-admin)" == "enabled" ]]; then
+      systemctl disable keystone-wsgi-admin
+      return_code=2
+    fi
+    exit ${return_code}
+  args:
+    executable: /bin/bash
+  register: _remove_admin_service
+  changed_when: _remove_admin_service.rc == 2
+  failed_when: _remove_admin_service.rc not in [0, 2]
+  listen: "Restart uWSGI"
+  # This task causes ansible-lint to give a ANSIBLE0014
+  # error, which does not make much sense given how the
+  # environment variable is used in this case.
+  # TODO(odyssey4me):
+  # Try to understand the issue ansible-lint is trying
+  # to highlight and address it.
+  tags:
+    - skip_ansible_lint
+
+# NOTE(mnaser): This should be removed in the Stein cycle
+- name: Clean up keystone-wsgi-admin service files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - "/etc/tmpfiles.d/openstack-keystone-wsgi-admin.conf"
+    - "/etc/systemd/system/keystone-wsgi-admin.service"
+    - "/etc/uwsgi/keystone-wsgi-admin.ini"
+    - "/var/www/cgi-bin/keystone/admin"
   listen: "Restart uWSGI"
 
 # Note (odyssey4me):
@@ -94,7 +133,6 @@
     timeout: 25
     delay: 10
   with_items:
-    - "{{ keystone_uwsgi_ports['keystone-wsgi-admin']['socket'] }}"
     - "{{ keystone_uwsgi_ports['keystone-wsgi-public']['socket'] }}"
   register: _wait_check
   until: _wait_check is success
