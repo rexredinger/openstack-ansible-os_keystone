@@ -25,6 +25,8 @@
         - openstack-ansible-functional-distro_install-ubuntu-bionic
         - openstack-ansible-functional-distro_install-centos-7
         - openstack-ansible-functional-distro_install-opensuse-423
+        - openstack-ansible-functional-distro_install-opensuse-150:
+            voting: false
     gate:
       jobs:
         - openstack-ansible-uw_apache-centos-7
