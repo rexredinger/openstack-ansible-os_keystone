@@ -15,11 +15,13 @@
 
 - name: Enable SSHD
   systemd:
-    name: sshd
+    name: "{{ keystone_sshd }}"
     state: started
     enabled: yes
     masked: no
     daemon_reload: yes
+  delegate_to: "{{ item }}"
+  with_items: "{{ ansible_play_hosts }}"
 
 - name: Generate the keystone system user ssh key
   user:

@@ -83,3 +83,5 @@ keystone_nginx_conf_path: "conf.d"
 keystone_system_service_name: httpd
 
 keystone_uwsgi_bin: '/usr/sbin'
+
+keystone_sshd: sshd
