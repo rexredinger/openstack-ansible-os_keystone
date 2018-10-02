@@ -93,3 +93,5 @@ keystone_nginx_conf_path: "sites-available"
 keystone_system_service_name: apache2
 
 keystone_uwsgi_bin: '/usr/bin'
+
+keystone_sshd: ssh
