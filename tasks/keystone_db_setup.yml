@@ -102,6 +102,8 @@
   when:
     - "ansible_local['openstack_ansible']['keystone']['need_db_expand'] | bool"
   run_once: yes
+  notify:
+    - flush cache
 
 - name: Perform a Keystone DB sync migrate
   command: "{{ keystone_bin }}/keystone-manage db_sync --migrate"
@@ -110,6 +112,8 @@
   when:
     - "ansible_local['openstack_ansible']['keystone']['need_db_migrate'] | bool"
   run_once: yes
+  notify:
+    - flush cache
 
 - name: Perform a Keystone DB sync contract
   command: "{{ keystone_bin }}/keystone-manage db_sync --contract"
@@ -119,3 +123,5 @@
     - "(keystone_all_software_updated | default('no')) | bool"
     - "ansible_local['openstack_ansible']['keystone']['need_db_contract'] | bool"
   run_once: yes
+  notify:
+    - flush cache

@@ -164,6 +164,32 @@
   retries: 5
   delay: 2
 
+- name: Flush memcached
+  local_command:
+    hosts: memcached
+    gather_facts: true
+    user: root
+    vars:
+      memcached_conf_dest:
+        debian: "/etc/memcached.conf"
+        redhat: "/etc/sysconfig/memcached"
+      netcat_package:
+        debian: "netcat-openbsd"
+        redhat: "nmap-ncat"
+    tasks:
+      - name: Ensuring netcat is installed
+        package:
+          name: "{{ netcat_package.get(ansible_os_family | lower) }}"
+          state: present
+      - name: Flush all of the cache in memcached
+        shell: |
+          echo 'flush_all' | nc $(awk '/^\-l/ {print $2}' {{ memcached_conf_dest.get(ansible_os_family | lower) }} | awk -F, '{ print $1 }') $(awk '/^\-p/ {print $2}' {{ memcached_conf_dest.get(ansible_os_family | lower) }} )
+  when: ("{{ need_db_expand | default('False') }}") or
+        ("{{ need_db_migrate | default('False') }}") or
+        ("{{ need_db_contract | default('False') }}")
+  listen:
+    - "flush chache"
+
 - meta: noop
   listen: Manage LB
   when: false
